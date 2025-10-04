@@ -448,7 +448,7 @@ function optimizeGearSelections(targets, calc, gears, leadscrewTpi) {
         // 2-gear solutions have structure: [ga, null, null, gd]
         const isTwoGearSolution = (solution.Gears[1] === null && solution.Gears[2] === null);
         if (isTwoGearSolution) {
-            score += 1000; // HUGE bonus for 2-gear solutions!
+            score += 10000; // HUGE bonus for 2-gear solutions!
         }
 
         for (let i = 0; i < 4; i++) {

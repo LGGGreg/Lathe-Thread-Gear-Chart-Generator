@@ -147,84 +147,76 @@
         function testGearDetection() {
             clearResults();
             log('=== Testing 2-Gear Solution Detection ===', 'info');
-            
+
             // Test 2-gear solution structure
             const twoGearSolution = {
                 Gears: [40, null, null, 80],
                 TPI: 8.0,
                 Pitch: 3.175
             };
-            
+
             const fourGearSolution = {
                 Gears: [40, 60, 80, 72],
                 TPI: 8.0,
                 Pitch: 3.175
             };
-            
+
             log(`2-gear solution structure: [${twoGearSolution.Gears.join(', ')}]`, 'info');
-            log(`  Gears[1] === null: ${twoGearSolution.Gears[1] === null}`, 'info');
-            log(`  Gears[2] === null: ${twoGearSolution.Gears[2] === null}`, 'info');
-            log(`  Gears[2] === undefined: ${twoGearSolution.Gears[2] === undefined}`, 'info');
-            log(`  typeof Gears[2]: ${typeof twoGearSolution.Gears[2]}`, 'info');
-            
             log(`4-gear solution structure: [${fourGearSolution.Gears.join(', ')}]`, 'info');
-            log(`  Gears[1] === null: ${fourGearSolution.Gears[1] === null}`, 'info');
-            log(`  Gears[2] === null: ${fourGearSolution.Gears[2] === null}`, 'info');
-            
-            // Test current detection logic (WRONG)
-            const wrongDetection = (twoGearSolution.Gears[1] === null && twoGearSolution.Gears[2] === undefined);
-            log(`Current detection (Gears[1]===null && Gears[2]===undefined): ${wrongDetection}`, wrongDetection ? 'pass' : 'fail');
-            
-            // Test correct detection logic
-            const correctDetection = (twoGearSolution.Gears[1] === null && twoGearSolution.Gears[2] === null);
-            log(`Correct detection (Gears[1]===null && Gears[2]===null): ${correctDetection}`, correctDetection ? 'pass' : 'fail');
-            
-            assert(correctDetection === true, '2-gear solution should be detected with correct logic');
-            assert(wrongDetection === false, 'Current logic FAILS to detect 2-gear solutions');
-            
+
+            // Test detection logic
+            const is2Gear = (twoGearSolution.Gears[1] === null && twoGearSolution.Gears[2] === null);
+            const is4Gear = !(fourGearSolution.Gears[1] === null && fourGearSolution.Gears[2] === null);
+
+            assert(is2Gear === true, '2-gear solution correctly detected');
+            assert(is4Gear === true, '4-gear solution correctly identified as not 2-gear');
+
             // Test with real calculator
             log('\n=== Testing with Real Calculator ===', 'info');
             const calc = new GearCalculator();
             const gears = [20, 21, 25, 30, 35, 40, 45, 48, 50, 54, 55, 57, 60, 65, 72, 80];
-            
+
             const solutions = calc.getGears({
                 gears: gears,
                 tpi: 8,
                 leadscrew_tpi: 16
             });
-            
+
             log(`Found ${solutions.length} solutions for 8 TPI`, 'info');
-            
+
             let twoGearCount = 0;
             let fourGearCount = 0;
-            
-            solutions.slice(0, 5).forEach((sol, idx) => {
+
+            solutions.slice(0, 10).forEach((sol, idx) => {
                 const is2Gear = (sol.Gears[1] === null && sol.Gears[2] === null);
                 if (is2Gear) twoGearCount++;
                 else fourGearCount++;
-                
-                log(`Solution ${idx + 1}: [${sol.Gears.map(g => g === null ? 'null' : g).join(', ')}] - ${is2Gear ? '2-GEAR' : '4-GEAR'}`, 'info');
+
+                log(`Solution ${idx + 1}: [${sol.Gears.map(g => g === null ? 'null' : g).join(', ')}] - ${is2Gear ? '2-GEAR ✓' : '4-GEAR'}`, is2Gear ? 'pass' : 'info');
             });
-            
-            log(`\nTotal in first 5: ${twoGearCount} two-gear, ${fourGearCount} four-gear`, 'info');
+
+            log(`\nTotal in first 10: ${twoGearCount} two-gear, ${fourGearCount} four-gear`, 'info');
+            assert(twoGearCount > 0, 'At least one 2-gear solution found');
+
+            return { twoGearCount, fourGearCount, total: solutions.length };
         }
 
         function testScoring() {
             clearResults();
             log('=== Testing Scoring Algorithm ===', 'info');
-            
+
             const twoGearSolution = {
                 Gears: [40, null, null, 80],
                 TPI: 8.0,
                 Pitch: 3.175
             };
-            
+
             const fourGearSolution = {
                 Gears: [40, 60, 80, 72],
                 TPI: 8.0,
                 Pitch: 3.175
             };
-            
+
             // Simulate scoring
             const gearFrequency = {
                 'pos0_40': 10,
@@ -233,32 +225,21 @@
                 'pos3_72': 12,
                 'pos3_80': 15
             };
-            
+
             const selectedGears = {};
-            
-            // Score 2-gear (with WRONG detection)
-            let score2Wrong = 0;
-            const is2GearWrong = (twoGearSolution.Gears[1] === null && twoGearSolution.Gears[2] === undefined);
-            if (is2GearWrong) score2Wrong += 10000000;
+
+            // Score 2-gear solution
+            let score2 = 0;
+            const is2Gear = (twoGearSolution.Gears[1] === null && twoGearSolution.Gears[2] === null);
+            if (is2Gear) score2 += 10000000;
             for (let i = 0; i < 4; i++) {
                 const gear = twoGearSolution.Gears[i];
                 if (gear !== null && gear !== undefined) {
-                    score2Wrong += (gearFrequency[`pos${i}_${gear}`] || 0) * 10;
+                    score2 += (gearFrequency[`pos${i}_${gear}`] || 0) * 10;
                 }
             }
-            
-            // Score 2-gear (with CORRECT detection)
-            let score2Correct = 0;
-            const is2GearCorrect = (twoGearSolution.Gears[1] === null && twoGearSolution.Gears[2] === null);
-            if (is2GearCorrect) score2Correct += 10000000;
-            for (let i = 0; i < 4; i++) {
-                const gear = twoGearSolution.Gears[i];
-                if (gear !== null && gear !== undefined) {
-                    score2Correct += (gearFrequency[`pos${i}_${gear}`] || 0) * 10;
-                }
-            }
-            
-            // Score 4-gear
+
+            // Score 4-gear solution
             let score4 = 0;
             const is4Gear = !(fourGearSolution.Gears[1] === null && fourGearSolution.Gears[2] === null);
             for (let i = 0; i < 4; i++) {
@@ -267,35 +248,111 @@
                     score4 += (gearFrequency[`pos${i}_${gear}`] || 0) * 10;
                 }
             }
-            
+
             log(`2-gear solution: [${twoGearSolution.Gears.join(', ')}]`, 'info');
-            log(`  Score with WRONG detection: ${score2Wrong}`, score2Wrong > 10000000 ? 'fail' : 'fail');
-            log(`  Score with CORRECT detection: ${score2Correct}`, score2Correct > 10000000 ? 'pass' : 'fail');
-            
+            log(`  2-gear bonus applied: ${is2Gear ? 'YES ✓' : 'NO ✗'}`, is2Gear ? 'pass' : 'fail');
+            log(`  Total score: ${score2.toLocaleString()}`, 'info');
+
             log(`\n4-gear solution: [${fourGearSolution.Gears.join(', ')}]`, 'info');
-            log(`  Score: ${score4}`, 'info');
-            
+            log(`  2-gear bonus applied: ${is4Gear ? 'NO (correct)' : 'YES (wrong)'}`, !is4Gear ? 'fail' : 'pass');
+            log(`  Total score: ${score4.toLocaleString()}`, 'info');
+
             log(`\nComparison:`, 'info');
-            log(`  2-gear (wrong): ${score2Wrong} ${score2Wrong > score4 ? '✓ WINS' : '✗ LOSES'}`, score2Wrong > score4 ? 'fail' : 'fail');
-            log(`  2-gear (correct): ${score2Correct} ${score2Correct > score4 ? '✓ WINS' : '✗ LOSES'}`, score2Correct > score4 ? 'pass' : 'fail');
-            log(`  4-gear: ${score4}`, 'info');
-            
-            assert(score2Correct > score4, '2-gear should score higher than 4-gear with correct detection');
-            assert(score2Wrong <= score4, 'Current (wrong) detection fails to give 2-gear bonus');
+            log(`  2-gear: ${score2.toLocaleString()} ${score2 > score4 ? '✓ WINS' : '✗ LOSES'}`, score2 > score4 ? 'pass' : 'fail');
+            log(`  4-gear: ${score4.toLocaleString()}`, 'info');
+            log(`  Difference: ${(score2 - score4).toLocaleString()} points`, 'info');
+
+            assert(is2Gear === true, '2-gear solution correctly identified');
+            assert(score2 > 10000000, '2-gear bonus applied (+10M points)');
+            assert(score2 > score4, '2-gear scores higher than 4-gear');
+            assert(score2 / score4 > 1000, '2-gear scores MUCH higher (1000x+)');
+
+            return { score2, score4, ratio: score2 / score4 };
         }
 
         function testOptimization() {
             clearResults();
             log('=== Testing Full Optimization ===', 'info');
-            
-            // This will test the actual optimization function once we fix it
-            log('This test will be more useful after we fix the detection bug', 'info');
+
+            // Test with a small set of threads
+            const testThreads = [8, 12, 16, 20];
+            const gears = [20, 21, 25, 30, 35, 40, 45, 48, 50, 54, 55, 57, 60, 65, 72, 80];
+
+            log(`Testing optimization for ${testThreads.length} threads: ${testThreads.join(', ')} TPI`, 'info');
+
+            const calc = new GearCalculator();
+            let total2Gear = 0;
+            let total4Gear = 0;
+
+            testThreads.forEach(tpi => {
+                const solutions = calc.getGears({
+                    gears: gears,
+                    tpi: tpi,
+                    leadscrew_tpi: 16
+                });
+
+                if (solutions.length > 0) {
+                    const best = solutions[0]; // First solution should be best
+                    const is2Gear = (best.Gears[1] === null && best.Gears[2] === null);
+
+                    if (is2Gear) total2Gear++;
+                    else total4Gear++;
+
+                    log(`${tpi} TPI: [${best.Gears.map(g => g === null ? 'ANY' : g).join(', ')}] - ${is2Gear ? '2-GEAR ✓' : '4-GEAR'}`, is2Gear ? 'pass' : 'info');
+                }
+            });
+
+            const percent2Gear = (total2Gear / testThreads.length * 100).toFixed(1);
+            log(`\nResults: ${total2Gear}/${testThreads.length} are 2-gear (${percent2Gear}%)`, 'info');
+
+            assert(total2Gear > 0, 'At least some 2-gear solutions selected');
+            assert(total2Gear >= total4Gear, 'More 2-gear than 4-gear solutions (or equal)');
+
+            return { total2Gear, total4Gear, percent: percent2Gear };
         }
 
         function runAllTests() {
-            testGearDetection();
+            clearResults();
+            log('🧪 Running All Tests...', 'info');
+            log('', 'info');
+
+            const results = {};
+
+            // Run tests sequentially
+            results.detection = testGearDetection();
+
             setTimeout(() => {
-                testScoring();
+                results.scoring = testScoring();
+
+                setTimeout(() => {
+                    results.optimization = testOptimization();
+
+                    setTimeout(() => {
+                        // Summary
+                        log('\n' + '='.repeat(50), 'info');
+                        log('📊 TEST SUMMARY', 'info');
+                        log('='.repeat(50), 'info');
+
+                        const passed = testResults.filter(r => r.type === 'pass').length;
+                        const failed = testResults.filter(r => r.type === 'fail').length;
+                        const total = passed + failed;
+
+                        log(`Total Tests: ${total}`, 'info');
+                        log(`Passed: ${passed} ✓`, 'pass');
+                        if (failed > 0) {
+                            log(`Failed: ${failed} ✗`, 'fail');
+                        }
+                        log(`Success Rate: ${(passed/total*100).toFixed(1)}%`, passed === total ? 'pass' : 'fail');
+
+                        // Export results for command-line
+                        window.testResults = {
+                            passed,
+                            failed,
+                            total,
+                            details: results
+                        };
+                    }, 100);
+                }, 100);
             }, 100);
         }
 

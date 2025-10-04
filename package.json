@@ -1,0 +1,28 @@
+{
+  "name": "mini-lathe-gear-calculator",
+  "version": "2.0.0",
+  "description": "Mini-Lathe Change Gear Calculator with intelligent optimization",
+  "main": "index.html",
+  "scripts": {
+    "test": "node tests/run-tests.js",
+    "test:browser": "start tests/test-algorithm.html",
+    "install-test-deps": "npm install --save-dev puppeteer"
+  },
+  "keywords": [
+    "lathe",
+    "gears",
+    "machining",
+    "threading",
+    "calculator"
+  ],
+  "author": "Based on Al Harral's GEARS.BAS, modernized",
+  "license": "MIT",
+  "devDependencies": {
+    "puppeteer": "^21.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "."
+  }
+}
+
