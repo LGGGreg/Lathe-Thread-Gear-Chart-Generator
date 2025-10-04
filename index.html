@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini-Lathe Change Gear Calculator</title>
+    <meta name="description" content="Calculate alternative gears for cutting threads on a 7x12 mini-lathe (Sieg SC2). Works with 1.5mm pitch or 16 TPI leadscrew.">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Mini-Lathe Change Gear Calculator</h1>
+        </div>
+    </header>
+
+    <main>
+        <section class="intro">
+            <h2>About This Calculator</h2>
+            <p>This tool can calculate alternative gears that can be used to cut a particular thread on a 7x12 mini-lathe like the Sieg SC2.
+            It works with either a 1.5&nbsp;mm pitch leadscrew (the default) or a 16&nbsp;TPI one.</p>
+            
+            <p>The calculator is heavily based on the work of <a href="http://www.varmintal.com/alath.htm" target="_blank" rel="noopener">Al&nbsp;Harral</a>. 
+            The code is based on Al&nbsp;Harral's <a href="http://www.varmintal.com/gears.bas" target="_blank" rel="noopener">GEARS.BAS</a>, 
+            ported to modern JavaScript.</p>
+        </section>
+
+        <section class="calculator">
+            <h2>Calculator</h2>
+            
+            <form class="calc-form">
+                <table class="calcInputForm">
+                    <tbody>
+                        <tr>
+                            <td>Leadscrew:</td>
+                            <td>
+                                <div class="radio-group">
+                                    <label>
+                                        <input type="radio" id="metric_ls" name="leadscrew_type" value="metric" checked>
+                                        Metric (1.5&nbsp;mm pitch)
+                                    </label>
+                                    <label>
+                                        <input type="radio" id="imperial_ls" name="leadscrew_type" value="imperial">
+                                        Imperial (16&nbsp;tpi)
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Available Gears:</td>
+                            <td>
+                                <input type="text" id="gears1" value="" placeholder="e.g., 20,20,30,35,40,40,45">
+                                <br><br>
+                                <input type="text" id="gears2" value="" placeholder="e.g., 50,55,57,60,65,80,80">
+                                <br><br>
+                                <input type="text" id="gears3" value="" placeholder="Additional gears (optional)">
+                                <small style="display: block; margin-top: 0.5rem; color: #666;">
+                                    Enter comma-separated gear tooth counts
+                                </small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Options:</td>
+                            <td>
+                                <div class="checkbox-group">
+                                    <label>
+                                        <input type="checkbox" id="includeall" name="includeall">
+                                        Always show four-gear options
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Target Type:</td>
+                            <td>
+                                <div class="radio-group">
+                                    <label>
+                                        <input type="radio" id="getpitch" name="target" value="pitch" checked>
+                                        Metric Pitch (mm)
+                                    </label>
+                                    <label>
+                                        <input type="radio" id="gettpi" name="target" value="tpi">
+                                        Imperial TPI (threads per inch)
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Target Pitch:</td>
+                            <td>
+                                <input type="number" id="pitch" name="pitch" min="0.1" step="0.05" value="1.5" disabled>
+                                <small style="display: inline-block; margin-left: 0.5rem; color: #666;">mm</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Target TPI:</td>
+                            <td>
+                                <input type="number" id="tpi" name="tpi" min="0.5" step="0.5" value="16">
+                                <small style="display: inline-block; margin-left: 0.5rem; color: #666;">threads per inch</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <input type="submit" value="Calculate Gear Combinations">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </section>
+
+        <section class="results">
+            <h2>Results</h2>
+            <div id="holder">
+                <p class="info-message">Enter your parameters above and click "Calculate Gear Combinations" to see results.</p>
+            </div>
+        </section>
+
+        <section class="diagram">
+            <h2>Gear Configuration</h2>
+            <div class="image-container">
+                <img src="images/change_gears.webp" alt="Mini-lathe change gear configuration diagram" loading="lazy">
+            </div>
+            <p style="text-align: center; color: #666; font-size: 0.9rem;">
+                Diagram showing the change gear configuration on a mini-lathe
+            </p>
+        </section>
+
+        <section class="instructions">
+            <h2>How to Use</h2>
+            <ol>
+                <li><strong>Select your leadscrew type:</strong> Choose between metric (1.5mm pitch) or imperial (16 TPI)</li>
+                <li><strong>Enter available gears:</strong> List the gear tooth counts you have available, separated by commas</li>
+                <li><strong>Choose target type:</strong> Select whether you want to cut metric threads (pitch in mm) or imperial threads (TPI)</li>
+                <li><strong>Enter target value:</strong> Specify the pitch or TPI you want to achieve</li>
+                <li><strong>Calculate:</strong> Click the button to see all possible gear combinations</li>
+            </ol>
+            
+            <h3>Understanding the Results</h3>
+            <ul>
+                <li><strong>Gear A:</strong> Driver gear on the spindle</li>
+                <li><strong>Gear B:</strong> Idler gear (if needed) - "ANY" means any gear will work</li>
+                <li><strong>Gear C:</strong> Second idler gear (if needed)</li>
+                <li><strong>Gear D:</strong> Driven gear on the leadscrew</li>
+                <li><strong>Actual Value:</strong> The precise pitch or TPI you'll achieve with this combination</li>
+            </ul>
+            
+            <p><strong>Note:</strong> The calculator first tries to find simple two-gear solutions. If none are found (or if you check "Always show four-gear options"), it will show four-gear compound solutions.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>
+            <strong>Mini-Lathe Change Gear Calculator</strong><br>
+            Based on Al Harral's GEARS.BAS | Modernized for offline use<br>
+            <small>This is a free, open-source tool for the machining community</small>
+        </p>
+    </footer>
+
+    <script src="js/calculator.js"></script>
+</body>
+</html>
+
