@@ -109,9 +109,9 @@
             <div class="collapsible-section">
                 <div class="collapsible-header" onclick="toggleCollapsible('single')">
                     <h3>Calculate Single Thread</h3>
-                    <span class="collapsible-toggle open" id="single-toggle">▼</span>
+                    <span class="collapsible-toggle" id="single-toggle">▼</span>
                 </div>
-                <div class="collapsible-content open" id="single-content">
+                <div class="collapsible-content" id="single-content">
                     <div class="collapsible-content-inner">
                         <form class="calc-form">
                             <table class="calcInputForm">
@@ -182,7 +182,7 @@
                                 <tr>
                                     <td style="vertical-align: top;">Target TPI Values:</td>
                                     <td>
-                                        <textarea id="chart-tpi" rows="4" style="width: 100%; max-width: 400px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;" placeholder="e.g., 8,10,12,14,16,18,20,24"></textarea>
+                                        <textarea id="chart-tpi" rows="4" style="width: 100%; max-width: 400px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;" placeholder="e.g., 8,10,12,14,16,18,20,24">8,9,11,12,13,14,16,18,20,24,28,32,36,40,44,48,56,64,72,80</textarea>
                                         <small style="display: block; margin-top: 0.5rem; color: #666;">
                                             Enter comma-separated TPI values (Imperial)
                                         </small>
@@ -191,7 +191,7 @@
                                 <tr>
                                     <td style="vertical-align: top;">Target Pitch Values:</td>
                                     <td>
-                                        <textarea id="chart-pitch" rows="4" style="width: 100%; max-width: 400px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;" placeholder="e.g., 0.5,0.75,1.0,1.25,1.5,2.0"></textarea>
+                                        <textarea id="chart-pitch" rows="4" style="width: 100%; max-width: 400px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;" placeholder="e.g., 0.5,0.75,1.0,1.25,1.5,2.0">.35,.40,.45,.50,.65,.70,.75,.8,.9,1.0,1.25,1.5,1.75,2.0,2.5</textarea>
                                         <small style="display: block; margin-top: 0.5rem; color: #666;">
                                             Enter comma-separated pitch values in mm (Metric)
                                         </small>
