@@ -219,47 +219,59 @@
                 </div>
             </div>
 
-        <section class="diagram">
-            <h2>Gear Configuration</h2>
-            <div class="image-container">
-                <img src="images/change_gears.webp" alt="Mini-lathe change gear configuration diagram" loading="lazy">
+            <!-- How to Use Section (Collapsible) -->
+            <div class="collapsible-section">
+                <div class="collapsible-header" onclick="toggleCollapsible('howto')">
+                    <h3>How to Use This Calculator</h3>
+                    <span class="collapsible-toggle" id="howto-toggle">▼</span>
+                </div>
+                <div class="collapsible-content" id="howto-content">
+                    <div class="collapsible-content-inner">
+                        <h4>Quick Start</h4>
+                        <ol>
+                            <li><strong>Select your leadscrew type:</strong> Choose between metric (1.5mm pitch) or imperial (16 TPI)</li>
+                            <li><strong>Enter available gears:</strong> List the gear tooth counts you have available, separated by commas</li>
+                            <li><strong>Choose target type:</strong> Select whether you want to cut metric threads (pitch in mm) or imperial threads (TPI)</li>
+                            <li><strong>Enter target value:</strong> Specify the pitch or TPI you want to achieve</li>
+                            <li><strong>Calculate:</strong> Click the button to see all possible gear combinations</li>
+                        </ol>
+
+                        <h4>Understanding the Results</h4>
+                        <ul>
+                            <li><strong>Gear A:</strong> Driver gear on the spindle (easy to change)</li>
+                            <li><strong>Gear B:</strong> Idler gear (if needed) - "ANY" means any gear will work (hard to change)</li>
+                            <li><strong>Gear C:</strong> Second idler gear (if needed) (hard to change)</li>
+                            <li><strong>Gear D:</strong> Driven gear on the leadscrew (easy to change)</li>
+                            <li><strong>Actual Value:</strong> The precise pitch or TPI you'll achieve with this combination</li>
+                            <li><strong>Error %:</strong> How far off from the target (lower is better)</li>
+                        </ul>
+
+                        <p><strong>💡 Tip:</strong> The calculator strongly prefers 2-gear solutions (B=ANY, C=-) because gears B and C are difficult to change. This minimizes setup time!</p>
+
+                        <h4>Gear Configuration Diagram</h4>
+                        <div class="image-container">
+                            <img src="images/change_gears.webp" alt="Mini-lathe change gear configuration diagram" loading="lazy">
+                            <p style="text-align: center; color: #666; font-size: 0.9rem; margin-top: 0.5rem;">
+                                Diagram showing the change gear configuration on a mini-lathe
+                            </p>
+                        </div>
+
+                        <h4>How/Where to Change Gears</h4>
+                        <p><strong>General Tips:</strong></p>
+                        <ul>
+                            <li>Change gears are commonly tight on the shaft when new. You might need to use a screwdriver behind them to pry them off.</li>
+                            <li><strong>Positions A & D (Easy):</strong> These gears are on the spindle and leadscrew. Change these frequently for different threads.</li>
+                            <li><strong>Positions B & C (Hard):</strong> These are on a hollow shaft that comes off when the retaining socket head cap screw is removed. Use an arbor press to remove gears from the hollow shaft. <strong>Be careful not to lose the key!</strong></li>
+                        </ul>
+
+                        <p><strong>Position D Spacer:</strong></p>
+                        <p>Gear position D has a spacer behind the gear. When you only use three gears (2-gear solution), put the spacer <em>outside</em> the gear so it will align with the gear in position B.</p>
+
+                        <p><strong>Understanding "ANY" Gear:</strong></p>
+                        <p>Many combinations show "ANY" in columns B and C. This means you can use a gear with any number of teeth in position B - it's an idler and doesn't affect the overall gear ratio. Use a gear that makes it easy to properly engage the gears. For position C, any gear acts only as a spacer and doesn't engage other gears.</p>
+                    </div>
+                </div>
             </div>
-            <p style="text-align: center; color: #666; font-size: 0.9rem;">
-                Diagram showing the change gear configuration on a mini-lathe
-            </p>
-        </section>
-
-        <section class="instructions">
-            <h2>How to Use</h2>
-            <ol>
-                <li><strong>Select your leadscrew type:</strong> Choose between metric (1.5mm pitch) or imperial (16 TPI)</li>
-                <li><strong>Enter available gears:</strong> List the gear tooth counts you have available, separated by commas</li>
-                <li><strong>Choose target type:</strong> Select whether you want to cut metric threads (pitch in mm) or imperial threads (TPI)</li>
-                <li><strong>Enter target value:</strong> Specify the pitch or TPI you want to achieve</li>
-                <li><strong>Calculate:</strong> Click the button to see all possible gear combinations</li>
-            </ol>
-            
-            <h3>Understanding the Results</h3>
-            <ul>
-                <li><strong>Gear A:</strong> Driver gear on the spindle</li>
-                <li><strong>Gear B:</strong> Idler gear (if needed) - "ANY" means any gear will work</li>
-                <li><strong>Gear C:</strong> Second idler gear (if needed)</li>
-                <li><strong>Gear D:</strong> Driven gear on the leadscrew</li>
-                <li><strong>Actual Value:</strong> The precise pitch or TPI you'll achieve with this combination</li>
-            </ul>
-            
-            <p><strong>Note:</strong> The calculator first tries to find simple two-gear solutions. If none are found (or if you check "Always show four-gear options"), it will show four-gear compound solutions.</p>
-        </section>
-
-        <section class="instructions">
-            <h2>How/Where to change Gears</h2>
-            The change gears are commonly tight on the shaft when new. You might need to use a screwdriver behind them to pry them off.
-            Gear positions B and C are on a hollow shaft that comes off easily when the retaining socket head cap screw is removed. Then you can use an arbor press to remove the gears from the hollow shaft. Be careful that you do not lose the key.
-
-            Gear position D has a spacer behind the gear. When you only use three gears, put the spacer outside the gear so the gear will align with the gear in position B.
-
-            In the change gear results, many of the combinations have "Any gear" in columns B and C. This means that you can use a gear with any number of teeth in position B. It is an idler and does not affect the overall gear ratio. Use a gear that makes it easy to properly engage the gears. For these combinations, you can use any gear for position C; this gear acts only as a spacer and does not engage the other gears.
-        </section>
     </main>
 
     <footer>

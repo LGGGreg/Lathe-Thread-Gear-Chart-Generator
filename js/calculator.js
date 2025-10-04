@@ -387,16 +387,18 @@ function saveSettings() {
 /**
  * Optimize gear selection to minimize changes across chart
  *
- * Algorithm: Greedy Frequency-Based Selection
+ * Algorithm: Greedy Frequency-Based Selection with 2-Gear Preference
  * 1. Get all possible solutions for each target (up to 10 per target)
  * 2. Build frequency map: count how often each gear appears in each position
  * 3. Score each solution based on:
+ *    - 2-gear solution bonus: B=ANY, C=- (+1000 points) ← STRONGLY PREFERRED!
  *    - Frequency score: how common is this gear in this position? (×10 points)
  *    - Reuse bonus: is this gear already selected for this position? (+100 points)
  * 4. Greedy selection: for each target, pick the highest-scoring solution
  * 5. Update tracking as we go to prefer already-selected gears
  *
  * This minimizes gear changes by preferring:
+ * - 2-gear solutions (B and C are hard to change!) - HIGHEST PRIORITY
  * - Gears that appear frequently across many threads
  * - Gears already selected for previous threads
  *
@@ -440,6 +442,14 @@ function optimizeGearSelections(targets, calc, gears, leadscrewTpi) {
     // Step 3: Score each solution based on gear commonality
     const scoreSolution = (solution, selectedGears) => {
         let score = 0;
+
+        // STRONGLY prefer 2-gear solutions (B=ANY, C=-)
+        // Gears B and C are hard to change, so 2-gear solutions are much better
+        const isTwoGearSolution = (solution.Gears[1] === null && solution.Gears[2] === undefined);
+        if (isTwoGearSolution) {
+            score += 1000; // HUGE bonus for 2-gear solutions!
+        }
+
         for (let i = 0; i < 4; i++) {
             const gear = solution.Gears[i];
             if (gear !== null && gear !== undefined) {
