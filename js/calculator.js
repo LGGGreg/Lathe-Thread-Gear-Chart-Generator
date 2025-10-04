@@ -14,8 +14,8 @@ class GearCalculator {
 
     init() {
         // Load gear values from URL parameters or use defaults
-        const gears1 = this.getParameterByName("gears1", "20,20,30,35,40,40,45");
-        const gears2 = this.getParameterByName("gears2", "50,55,57,60,65,80,80");
+        const gears1 = this.getParameterByName("gears1", "20,20,20,21,25,30,35,40,40,45,45");
+        const gears2 = this.getParameterByName("gears2", "48,50,50,54,55,57,60,60,65,72,80,80");
         const gears3 = this.getParameterByName("gears3", "");
 
         document.getElementById("gears1").value = gears1;
@@ -214,11 +214,14 @@ class GearCalculator {
         // Calculate solutions
         const solutions = this.getGears(args);
 
+        // Get target value for error calculation
+        const targetValue = isImperial ? args.tpi : args.pitch;
+
         // Display results
-        this.displayResults(solutions, isImperial);
+        this.displayResults(solutions, isImperial, targetValue);
     }
 
-    displayResults(solutions, isImperial) {
+    displayResults(solutions, isImperial, targetValue) {
         const holder = document.getElementById("holder");
         holder.innerHTML = "";
 
@@ -233,7 +236,7 @@ class GearCalculator {
 
         // Create header
         const headerRow = table.insertRow(0);
-        ['Gear A', 'Gear B', 'Gear C', 'Gear D', isImperial ? 'Actual TPI' : 'Actual Pitch (mm)'].forEach(text => {
+        ['Gear A', 'Gear B', 'Gear C', 'Gear D', isImperial ? 'Actual TPI' : 'Actual Pitch (mm)', 'Error %'].forEach(text => {
             const th = document.createElement('th');
             th.innerHTML = `<b>${text}</b>`;
             th.className = 'border';
@@ -262,6 +265,16 @@ class GearCalculator {
             valueCell.className = 'border';
             const actualValue = isImperial ? solution.TPI : solution.Pitch;
             valueCell.innerHTML = this.formatNumber(actualValue);
+
+            // Add error percentage cell
+            const errorCell = row.insertCell(5);
+            errorCell.className = 'border';
+            if (targetValue && targetValue !== 0) {
+                const errorPercent = ((actualValue - targetValue) / targetValue) * 100;
+                errorCell.innerHTML = this.formatNumber(errorPercent) + '%';
+            } else {
+                errorCell.innerHTML = 'N/A';
+            }
         });
 
         holder.appendChild(table);

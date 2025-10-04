@@ -20,9 +20,10 @@
             <p>This tool can calculate alternative gears that can be used to cut a particular thread on a 7x12 mini-lathe like the Sieg SC2.
             It works with either a 1.5&nbsp;mm pitch leadscrew (the default) or a 16&nbsp;TPI one.</p>
             
-            <p>The calculator is heavily based on the work of <a href="http://www.varmintal.com/alath.htm" target="_blank" rel="noopener">Al&nbsp;Harral</a>. 
-            The code is based on Al&nbsp;Harral's <a href="http://www.varmintal.com/gears.bas" target="_blank" rel="noopener">GEARS.BAS</a>, 
-            ported to modern JavaScript.</p>
+            <p>The calculator is heavily based on the work of <a href="http://www.varmintal.com/alath.htm" target="_blank" rel="noopener">Al&nbsp;Harral</a>.
+            The code is based on Al&nbsp;Harral's <a href="http://www.varmintal.com/gears.bas" target="_blank" rel="noopener">GEARS.BAS</a>,
+            originally ported to the web by <a href="https://www.cgtk.co.uk/metalwork/calculators/changegears/minilathe" target="_blank" rel="noopener">A.&nbsp;S.&nbsp;Budden</a>,
+            and modernized to modern JavaScript for offline use.</p>
         </section>
 
         <section class="calculator">
@@ -36,11 +37,11 @@
                             <td>
                                 <div class="radio-group">
                                     <label>
-                                        <input type="radio" id="metric_ls" name="leadscrew_type" value="metric" checked>
+                                        <input type="radio" id="metric_ls" name="leadscrew_type" value="metric">
                                         Metric (1.5&nbsp;mm pitch)
                                     </label>
                                     <label>
-                                        <input type="radio" id="imperial_ls" name="leadscrew_type" value="imperial">
+                                        <input type="radio" id="imperial_ls" name="leadscrew_type" value="imperial" checked>
                                         Imperial (16&nbsp;tpi)
                                     </label>
                                 </div>
@@ -64,7 +65,7 @@
                             <td>
                                 <div class="checkbox-group">
                                     <label>
-                                        <input type="checkbox" id="includeall" name="includeall">
+                                        <input type="checkbox" id="includeall" name="includeall" checked>
                                         Always show four-gear options
                                     </label>
                                 </div>
@@ -75,11 +76,11 @@
                             <td>
                                 <div class="radio-group">
                                     <label>
-                                        <input type="radio" id="getpitch" name="target" value="pitch" checked>
+                                        <input type="radio" id="getpitch" name="target" value="pitch">
                                         Metric Pitch (mm)
                                     </label>
                                     <label>
-                                        <input type="radio" id="gettpi" name="target" value="tpi">
+                                        <input type="radio" id="gettpi" name="target" value="tpi" checked>
                                         Imperial TPI (threads per inch)
                                     </label>
                                 </div>
@@ -153,7 +154,7 @@
     <footer>
         <p>
             <strong>Mini-Lathe Change Gear Calculator</strong><br>
-            Based on Al Harral's GEARS.BAS | Modernized for offline use<br>
+            Based on Al Harral's GEARS.BAS | Original web version by A. S. Budden (<a href="https://www.cgtk.co.uk/metalwork/calculators/changegears/minilathe" target="_blank" rel="noopener">CGTK.co.uk</a>) | Modernized for offline use<br>
             <small>This is a free, open-source tool for the machining community</small>
         </p>
     </footer>
