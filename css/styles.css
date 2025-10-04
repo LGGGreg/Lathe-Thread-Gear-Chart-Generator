@@ -40,7 +40,6 @@ body {
 
 header {
     background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-    color: white;
     padding: 2.5rem 0;
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     border-bottom: 4px solid #3498db;
@@ -50,23 +49,26 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .header-logo {
     width: 80px;
     height: 80px;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    flex-shrink: 0;
 }
 
 .header-text {
     text-align: left;
+    flex-grow: 0;
 }
 
 header h1 {
     margin: 0;
     font-size: 2.5rem;
     font-weight: 700;
+    color: #ecf0f1;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     letter-spacing: -0.5px;
 }
@@ -396,7 +398,7 @@ table.tightHeight td {
 }
 
 .collapsible-content.open {
-    max-height: 2000px;
+    max-height: 5000px;
     transition: max-height 0.5s ease-in;
 }
 
