@@ -10,9 +10,13 @@
 <body>
     <header>
         <div class="container">
-            <img src="images/logo-50px.webp" alt="Logo" style="display: inline-block; vertical-align: middle; margin-right: 1rem;">
-            <h1 style="display: inline-block; vertical-align: middle;">Mini-Lathe Change Gear Calculator</h1>
-            <p style="margin-top: 0.5rem; color: #666; font-size: 0.9rem;">Calculate gear combinations for threading on 7x12 mini-lathes</p>
+            <div class="header-content">
+                <img src="images/logo.svg" alt="Gear Calculator Logo" class="header-logo">
+                <div class="header-text">
+                    <h1>Mini-Lathe Change Gear Calculator</h1>
+                    <p class="header-subtitle">Calculate gear combinations for threading on 7x12 mini-lathes</p>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -191,7 +195,7 @@
                                 <tr>
                                     <td style="vertical-align: top;">Target Pitch Values:</td>
                                     <td>
-                                        <textarea id="chart-pitch" rows="4" style="width: 100%; max-width: 400px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;" placeholder="e.g., 0.5,0.75,1.0,1.25,1.5,2.0">.35,.40,.45,.50,.65,.70,.75,.8,.9,1.0,1.25,1.5,1.75,2.0,2.5</textarea>
+                                        <textarea id="chart-pitch" rows="4" style="width: 100%; max-width: 400px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;" placeholder="e.g., 0.5,0.75,1.0,1.25,1.5,2.0">.40,.45,.50,.65,.70,.75,.8,.9,1.0,1.25,1.5,1.75,2.0,2.5</textarea>
                                         <small style="display: block; margin-top: 0.5rem; color: #666;">
                                             Enter comma-separated pitch values in mm (Metric)
                                         </small>

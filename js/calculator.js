@@ -439,6 +439,7 @@ function calculateThreadChart() {
         if (solutions.length > 0) {
             const sol = solutions[0]; // Pick first solution
             chartData.push({
+                type: 'tpi',
                 target: `${targetTpi} TPI`,
                 gearA: sol.Gears[0] || '-',
                 gearB: sol.Gears[1] === null ? 'ANY' : (sol.Gears[1] || '-'),
@@ -449,6 +450,7 @@ function calculateThreadChart() {
             });
         } else {
             chartData.push({
+                type: 'tpi',
                 target: `${targetTpi} TPI`,
                 gearA: 'N/A',
                 gearB: 'N/A',
@@ -459,6 +461,20 @@ function calculateThreadChart() {
             });
         }
     });
+
+    // Add header break if we have both TPI and pitch values
+    if (tpiValues.length > 0 && pitchValues.length > 0) {
+        chartData.push({
+            type: 'header',
+            target: 'METRIC THREADS',
+            gearA: '',
+            gearB: '',
+            gearC: '',
+            gearD: '',
+            actual: '',
+            error: ''
+        });
+    }
 
     // Calculate for pitch values
     pitchValues.forEach(targetPitch => {
@@ -474,6 +490,7 @@ function calculateThreadChart() {
         if (solutions.length > 0) {
             const sol = solutions[0]; // Pick first solution
             chartData.push({
+                type: 'pitch',
                 target: `${targetPitch} mm`,
                 gearA: sol.Gears[0] || '-',
                 gearB: sol.Gears[1] === null ? 'ANY' : (sol.Gears[1] || '-'),
@@ -484,6 +501,7 @@ function calculateThreadChart() {
             });
         } else {
             chartData.push({
+                type: 'pitch',
                 target: `${targetPitch} mm`,
                 gearA: 'N/A',
                 gearB: 'N/A',
@@ -507,7 +525,16 @@ function displayThreadChart(chartData) {
         return;
     }
 
-    let html = '<div style="overflow-x: auto;">';
+    let html = '';
+
+    // Add export button at the top
+    html += '<div style="margin-bottom: 1rem;">';
+    html += '<button type="button" onclick="exportChartToCSV()" style="padding: 0.75rem 1.5rem; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; font-weight: bold;">';
+    html += '📥 Export as CSV';
+    html += '</button>';
+    html += '</div>';
+
+    html += '<div style="overflow-x: auto;">';
     html += '<table class="asbTable tightHeight">';
     html += '<thead><tr>';
     html += '<th class="border"><b>Target</b></th>';
@@ -521,28 +548,30 @@ function displayThreadChart(chartData) {
     html += '<tbody>';
 
     chartData.forEach(row => {
-        html += '<tr>';
-        html += `<td class="border">${row.target}</td>`;
-        html += `<td class="border">${row.gearA}</td>`;
-        html += `<td class="border">${row.gearB}</td>`;
-        html += `<td class="border">${row.gearC}</td>`;
-        html += `<td class="border">${row.gearD}</td>`;
-        html += `<td class="border">${row.actual}</td>`;
-        html += `<td class="border">${row.error}</td>`;
-        html += '</tr>';
+        if (row.type === 'header') {
+            // Add header row for metric section
+            html += '<tr style="background-color: #3498db; color: white; font-weight: bold;">';
+            html += `<td class="border" colspan="7" style="text-align: center; padding: 0.75rem;">${row.target}</td>`;
+            html += '</tr>';
+        } else {
+            html += '<tr>';
+            html += `<td class="border">${row.target}</td>`;
+            html += `<td class="border">${row.gearA}</td>`;
+            html += `<td class="border">${row.gearB}</td>`;
+            html += `<td class="border">${row.gearC}</td>`;
+            html += `<td class="border">${row.gearD}</td>`;
+            html += `<td class="border">${row.actual}</td>`;
+            html += `<td class="border">${row.error}</td>`;
+            html += '</tr>';
+        }
     });
 
     html += '</tbody></table></div>';
 
-    // Add export button
-    html += '<button type="button" onclick="exportChartToCSV()" style="margin-top: 1rem; padding: 0.5rem 1rem; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer;">';
-    html += '📥 Export as CSV';
-    html += '</button>';
-
     resultsDiv.innerHTML = html;
 
-    // Store chart data globally for export
-    window.currentChartData = chartData;
+    // Store chart data globally for export (filter out header rows)
+    window.currentChartData = chartData.filter(row => row.type !== 'header');
 }
 
 // Global function to export chart to CSV
