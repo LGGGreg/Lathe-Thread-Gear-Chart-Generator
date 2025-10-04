@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Test Suite</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        .test-pass {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+        .test-fail {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+        .test-info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            color: #0c5460;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #667eea;
+            color: white;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .stat-box {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex: 1;
+            margin: 0 10px;
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Gear Calculator Algorithm Test Suite</h1>
+    
+    <div class="test-section">
+        <h2>Test Controls</h2>
+        <button onclick="runAllTests()">▶️ Run All Tests</button>
+        <button onclick="testGearDetection()">🔍 Test 2-Gear Detection</button>
+        <button onclick="testOptimization()">⚙️ Test Optimization</button>
+        <button onclick="testScoring()">📊 Test Scoring</button>
+        <button onclick="clearResults()">🗑️ Clear Results</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script src="../js/calculator.js"></script>
+    <script>
+        let testResults = [];
+
+        function log(message, type = 'info') {
+            const resultDiv = document.getElementById('results');
+            const testDiv = document.createElement('div');
+            testDiv.className = `test-result test-${type}`;
+            testDiv.textContent = message;
+            resultDiv.appendChild(testDiv);
+            
+            testResults.push({ message, type });
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            testResults = [];
+        }
+
+        function assert(condition, message) {
+            if (condition) {
+                log(`✓ PASS: ${message}`, 'pass');
+                return true;
+            } else {
+                log(`✗ FAIL: ${message}`, 'fail');
+                return false;
+            }
+        }
+
+        function testGearDetection() {
+            clearResults();
+            log('=== Testing 2-Gear Solution Detection ===', 'info');
+            
+            // Test 2-gear solution structure
+            const twoGearSolution = {
+                Gears: [40, null, null, 80],
+                TPI: 8.0,
+                Pitch: 3.175
+            };
+            
+            const fourGearSolution = {
+                Gears: [40, 60, 80, 72],
+                TPI: 8.0,
+                Pitch: 3.175
+            };
+            
+            log(`2-gear solution structure: [${twoGearSolution.Gears.join(', ')}]`, 'info');
+            log(`  Gears[1] === null: ${twoGearSolution.Gears[1] === null}`, 'info');
+            log(`  Gears[2] === null: ${twoGearSolution.Gears[2] === null}`, 'info');
+            log(`  Gears[2] === undefined: ${twoGearSolution.Gears[2] === undefined}`, 'info');
+            log(`  typeof Gears[2]: ${typeof twoGearSolution.Gears[2]}`, 'info');
+            
+            log(`4-gear solution structure: [${fourGearSolution.Gears.join(', ')}]`, 'info');
+            log(`  Gears[1] === null: ${fourGearSolution.Gears[1] === null}`, 'info');
+            log(`  Gears[2] === null: ${fourGearSolution.Gears[2] === null}`, 'info');
+            
+            // Test current detection logic (WRONG)
+            const wrongDetection = (twoGearSolution.Gears[1] === null && twoGearSolution.Gears[2] === undefined);
+            log(`Current detection (Gears[1]===null && Gears[2]===undefined): ${wrongDetection}`, wrongDetection ? 'pass' : 'fail');
+            
+            // Test correct detection logic
+            const correctDetection = (twoGearSolution.Gears[1] === null && twoGearSolution.Gears[2] === null);
+            log(`Correct detection (Gears[1]===null && Gears[2]===null): ${correctDetection}`, correctDetection ? 'pass' : 'fail');
+            
+            assert(correctDetection === true, '2-gear solution should be detected with correct logic');
+            assert(wrongDetection === false, 'Current logic FAILS to detect 2-gear solutions');
+            
+            // Test with real calculator
+            log('\n=== Testing with Real Calculator ===', 'info');
+            const calc = new GearCalculator();
+            const gears = [20, 21, 25, 30, 35, 40, 45, 48, 50, 54, 55, 57, 60, 65, 72, 80];
+            
+            const solutions = calc.getGears({
+                gears: gears,
+                tpi: 8,
+                leadscrew_tpi: 16
+            });
+            
+            log(`Found ${solutions.length} solutions for 8 TPI`, 'info');
+            
+            let twoGearCount = 0;
+            let fourGearCount = 0;
+            
+            solutions.slice(0, 5).forEach((sol, idx) => {
+                const is2Gear = (sol.Gears[1] === null && sol.Gears[2] === null);
+                if (is2Gear) twoGearCount++;
+                else fourGearCount++;
+                
+                log(`Solution ${idx + 1}: [${sol.Gears.map(g => g === null ? 'null' : g).join(', ')}] - ${is2Gear ? '2-GEAR' : '4-GEAR'}`, 'info');
+            });
+            
+            log(`\nTotal in first 5: ${twoGearCount} two-gear, ${fourGearCount} four-gear`, 'info');
+        }
+
+        function testScoring() {
+            clearResults();
+            log('=== Testing Scoring Algorithm ===', 'info');
+            
+            const twoGearSolution = {
+                Gears: [40, null, null, 80],
+                TPI: 8.0,
+                Pitch: 3.175
+            };
+            
+            const fourGearSolution = {
+                Gears: [40, 60, 80, 72],
+                TPI: 8.0,
+                Pitch: 3.175
+            };
+            
+            // Simulate scoring
+            const gearFrequency = {
+                'pos0_40': 10,
+                'pos1_60': 5,
+                'pos2_80': 8,
+                'pos3_72': 12,
+                'pos3_80': 15
+            };
+            
+            const selectedGears = {};
+            
+            // Score 2-gear (with WRONG detection)
+            let score2Wrong = 0;
+            const is2GearWrong = (twoGearSolution.Gears[1] === null && twoGearSolution.Gears[2] === undefined);
+            if (is2GearWrong) score2Wrong += 10000000;
+            for (let i = 0; i < 4; i++) {
+                const gear = twoGearSolution.Gears[i];
+                if (gear !== null && gear !== undefined) {
+                    score2Wrong += (gearFrequency[`pos${i}_${gear}`] || 0) * 10;
+                }
+            }
+            
+            // Score 2-gear (with CORRECT detection)
+            let score2Correct = 0;
+            const is2GearCorrect = (twoGearSolution.Gears[1] === null && twoGearSolution.Gears[2] === null);
+            if (is2GearCorrect) score2Correct += 10000000;
+            for (let i = 0; i < 4; i++) {
+                const gear = twoGearSolution.Gears[i];
+                if (gear !== null && gear !== undefined) {
+                    score2Correct += (gearFrequency[`pos${i}_${gear}`] || 0) * 10;
+                }
+            }
+            
+            // Score 4-gear
+            let score4 = 0;
+            const is4Gear = !(fourGearSolution.Gears[1] === null && fourGearSolution.Gears[2] === null);
+            for (let i = 0; i < 4; i++) {
+                const gear = fourGearSolution.Gears[i];
+                if (gear !== null && gear !== undefined) {
+                    score4 += (gearFrequency[`pos${i}_${gear}`] || 0) * 10;
+                }
+            }
+            
+            log(`2-gear solution: [${twoGearSolution.Gears.join(', ')}]`, 'info');
+            log(`  Score with WRONG detection: ${score2Wrong}`, score2Wrong > 10000000 ? 'fail' : 'fail');
+            log(`  Score with CORRECT detection: ${score2Correct}`, score2Correct > 10000000 ? 'pass' : 'fail');
+            
+            log(`\n4-gear solution: [${fourGearSolution.Gears.join(', ')}]`, 'info');
+            log(`  Score: ${score4}`, 'info');
+            
+            log(`\nComparison:`, 'info');
+            log(`  2-gear (wrong): ${score2Wrong} ${score2Wrong > score4 ? '✓ WINS' : '✗ LOSES'}`, score2Wrong > score4 ? 'fail' : 'fail');
+            log(`  2-gear (correct): ${score2Correct} ${score2Correct > score4 ? '✓ WINS' : '✗ LOSES'}`, score2Correct > score4 ? 'pass' : 'fail');
+            log(`  4-gear: ${score4}`, 'info');
+            
+            assert(score2Correct > score4, '2-gear should score higher than 4-gear with correct detection');
+            assert(score2Wrong <= score4, 'Current (wrong) detection fails to give 2-gear bonus');
+        }
+
+        function testOptimization() {
+            clearResults();
+            log('=== Testing Full Optimization ===', 'info');
+            
+            // This will test the actual optimization function once we fix it
+            log('This test will be more useful after we fix the detection bug', 'info');
+        }
+
+        function runAllTests() {
+            testGearDetection();
+            setTimeout(() => {
+                testScoring();
+            }, 100);
+        }
+
+        // Auto-run on load
+        window.addEventListener('load', () => {
+            log('Test suite loaded. Click "Run All Tests" to begin.', 'info');
+        });
+    </script>
+</body>
+</html>
+

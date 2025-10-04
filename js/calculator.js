@@ -445,7 +445,8 @@ function optimizeGearSelections(targets, calc, gears, leadscrewTpi) {
 
         // STRONGLY prefer 2-gear solutions (B=ANY, C=-)
         // Gears B and C are hard to change, so 2-gear solutions are much better
-        const isTwoGearSolution = (solution.Gears[1] === null && solution.Gears[2] === undefined);
+        // 2-gear solutions have structure: [ga, null, null, gd]
+        const isTwoGearSolution = (solution.Gears[1] === null && solution.Gears[2] === null);
         if (isTwoGearSolution) {
             score += 1000; // HUGE bonus for 2-gear solutions!
         }
