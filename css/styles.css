@@ -298,6 +298,69 @@ table.tightHeight td {
 }
 
 /* ========================================
+   Collapsible Sections
+   ======================================== */
+
+.collapsible-section {
+    margin-bottom: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.collapsible-header {
+    background-color: #f5f5f5;
+    padding: 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+
+.collapsible-header:hover {
+    background-color: #e8e8e8;
+}
+
+.collapsible-header h2,
+.collapsible-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #2c3e50;
+}
+
+.collapsible-toggle {
+    font-size: 1.5rem;
+    color: #3498db;
+    transition: transform 0.3s;
+}
+
+.collapsible-toggle.open {
+    transform: rotate(180deg);
+}
+
+.collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.collapsible-content.open {
+    max-height: 2000px;
+    transition: max-height 0.5s ease-in;
+}
+
+.collapsible-content-inner {
+    padding: 1.5rem;
+}
+
+/* Hidden class for show/hide */
+.hidden {
+    display: none !important;
+}
+
+/* ========================================
    Images
    ======================================== */
 

@@ -167,15 +167,15 @@ class GearCalculator {
 
     radioChange() {
         const tpiRequest = document.getElementById("gettpi");
-        const pitchInput = document.getElementById("pitch");
-        const tpiInput = document.getElementById("tpi");
+        const pitchRow = document.getElementById("pitch-row");
+        const tpiRow = document.getElementById("tpi-row");
 
         if (tpiRequest.checked) {
-            pitchInput.disabled = true;
-            tpiInput.disabled = false;
+            pitchRow.classList.add('hidden');
+            tpiRow.classList.remove('hidden');
         } else {
-            tpiInput.disabled = true;
-            pitchInput.disabled = false;
+            tpiRow.classList.add('hidden');
+            pitchRow.classList.remove('hidden');
         }
     }
 
@@ -311,3 +311,16 @@ if (document.readyState === 'loading') {
     new GearCalculator();
 }
 
+// Collapsible section toggle function
+function toggleCollapsible(sectionId) {
+    const content = document.getElementById(`${sectionId}-content`);
+    const toggle = document.getElementById(`${sectionId}-toggle`);
+
+    if (content.classList.contains('open')) {
+        content.classList.remove('open');
+        toggle.classList.remove('open');
+    } else {
+        content.classList.add('open');
+        toggle.classList.add('open');
+    }
+}

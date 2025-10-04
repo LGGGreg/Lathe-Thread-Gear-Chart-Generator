@@ -10,67 +10,93 @@
 <body>
     <header>
         <div class="container">
-            <h1>Mini-Lathe Change Gear Calculator</h1>
+            <img src="images/logo-50px.webp" alt="Logo" style="display: inline-block; vertical-align: middle; margin-right: 1rem;">
+            <h1 style="display: inline-block; vertical-align: middle;">Mini-Lathe Change Gear Calculator</h1>
+            <p style="margin-top: 0.5rem; color: #666; font-size: 0.9rem;">Calculate gear combinations for threading on 7x12 mini-lathes</p>
         </div>
     </header>
 
     <main>
-        <section class="intro">
-            <h2>About This Calculator</h2>
-            <p>This tool can calculate alternative gears that can be used to cut a particular thread on a 7x12 mini-lathe like the Sieg SC2.
-            It works with either a 1.5&nbsp;mm pitch leadscrew (the default) or a 16&nbsp;TPI one.</p>
-            
-            <p>The calculator is heavily based on the work of <a href="http://www.varmintal.com/alath.htm" target="_blank" rel="noopener">Al&nbsp;Harral</a>.
-            The code is based on Al&nbsp;Harral's <a href="http://www.varmintal.com/gears.bas" target="_blank" rel="noopener">GEARS.BAS</a>,
-            originally ported to the web by <a href="https://www.cgtk.co.uk/metalwork/calculators/changegears/minilathe" target="_blank" rel="noopener">A.&nbsp;S.&nbsp;Budden</a>,
-            and modernized to modern JavaScript for offline use.</p>
-        </section>
+        <!-- About Section (Collapsible) -->
+        <div class="collapsible-section">
+            <div class="collapsible-header" onclick="toggleCollapsible('about')">
+                <h3>About This Calculator</h3>
+                <span class="collapsible-toggle" id="about-toggle">▼</span>
+            </div>
+            <div class="collapsible-content" id="about-content">
+                <div class="collapsible-content-inner">
+                    <p>This tool can calculate alternative gears that can be used to cut a particular thread on a 7x12 mini-lathe like the Sieg SC2.
+                    It works with either a 1.5&nbsp;mm pitch leadscrew or a 16&nbsp;TPI one.</p>
+
+                    <p>The calculator is heavily based on the work of <a href="http://www.varmintal.com/alath.htm" target="_blank" rel="noopener">Al&nbsp;Harral</a>.
+                    The code is based on Al&nbsp;Harral's <a href="http://www.varmintal.com/gears.bas" target="_blank" rel="noopener">GEARS.BAS</a>,
+                    originally ported to the web by <a href="https://www.cgtk.co.uk/metalwork/calculators/changegears/minilathe" target="_blank" rel="noopener">A.&nbsp;S.&nbsp;Budden</a>,
+                    and modernized to modern JavaScript for offline use.</p>
+                </div>
+            </div>
+        </div>
 
         <section class="calculator">
             <h2>Calculator</h2>
-            
+
+            <!-- Setup Section (Collapsible) -->
+            <div class="collapsible-section">
+                <div class="collapsible-header" onclick="toggleCollapsible('setup')">
+                    <h3>Setup (Leadscrew & Available Gears)</h3>
+                    <span class="collapsible-toggle open" id="setup-toggle">▼</span>
+                </div>
+                <div class="collapsible-content open" id="setup-content">
+                    <div class="collapsible-content-inner">
+                        <table class="calcInputForm">
+                            <tbody>
+                                <tr>
+                                    <td>Leadscrew:</td>
+                                    <td>
+                                        <div class="radio-group">
+                                            <label>
+                                                <input type="radio" id="metric_ls" name="leadscrew_type" value="metric">
+                                                Metric (1.5&nbsp;mm pitch)
+                                            </label>
+                                            <label>
+                                                <input type="radio" id="imperial_ls" name="leadscrew_type" value="imperial" checked>
+                                                Imperial (16&nbsp;tpi)
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Available Gears:</td>
+                                    <td>
+                                        <input type="text" id="gears1" value="" placeholder="e.g., 20,20,30,35,40,40,45">
+                                        <br><br>
+                                        <input type="text" id="gears2" value="" placeholder="e.g., 50,55,57,60,65,80,80">
+                                        <br><br>
+                                        <input type="text" id="gears3" value="" placeholder="Additional gears (optional)">
+                                        <small style="display: block; margin-top: 0.5rem; color: #666;">
+                                            Enter comma-separated gear tooth counts
+                                        </small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Options:</td>
+                                    <td>
+                                        <div class="checkbox-group">
+                                            <label>
+                                                <input type="checkbox" id="includeall" name="includeall" checked>
+                                                Always show four-gear options
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <form class="calc-form">
                 <table class="calcInputForm">
                     <tbody>
-                        <tr>
-                            <td>Leadscrew:</td>
-                            <td>
-                                <div class="radio-group">
-                                    <label>
-                                        <input type="radio" id="metric_ls" name="leadscrew_type" value="metric">
-                                        Metric (1.5&nbsp;mm pitch)
-                                    </label>
-                                    <label>
-                                        <input type="radio" id="imperial_ls" name="leadscrew_type" value="imperial" checked>
-                                        Imperial (16&nbsp;tpi)
-                                    </label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Available Gears:</td>
-                            <td>
-                                <input type="text" id="gears1" value="" placeholder="e.g., 20,20,30,35,40,40,45">
-                                <br><br>
-                                <input type="text" id="gears2" value="" placeholder="e.g., 50,55,57,60,65,80,80">
-                                <br><br>
-                                <input type="text" id="gears3" value="" placeholder="Additional gears (optional)">
-                                <small style="display: block; margin-top: 0.5rem; color: #666;">
-                                    Enter comma-separated gear tooth counts
-                                </small>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Options:</td>
-                            <td>
-                                <div class="checkbox-group">
-                                    <label>
-                                        <input type="checkbox" id="includeall" name="includeall" checked>
-                                        Always show four-gear options
-                                    </label>
-                                </div>
-                            </td>
-                        </tr>
                         <tr>
                             <td>Target Type:</td>
                             <td>
@@ -86,14 +112,14 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="pitch-row" class="hidden">
                             <td>Target Pitch:</td>
                             <td>
-                                <input type="number" id="pitch" name="pitch" min="0.1" step="0.05" value="1.5" disabled>
+                                <input type="number" id="pitch" name="pitch" min="0.1" step="0.05" value="1.5">
                                 <small style="display: inline-block; margin-left: 0.5rem; color: #666;">mm</small>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="tpi-row">
                             <td>Target TPI:</td>
                             <td>
                                 <input type="number" id="tpi" name="tpi" min="0.5" step="0.5" value="16">
