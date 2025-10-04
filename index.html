@@ -43,9 +43,9 @@
             <div class="collapsible-section">
                 <div class="collapsible-header" onclick="toggleCollapsible('setup')">
                     <h3>Setup (Leadscrew & Available Gears)</h3>
-                    <span class="collapsible-toggle open" id="setup-toggle">▼</span>
+                    <span class="collapsible-toggle" id="setup-toggle">▼</span>
                 </div>
-                <div class="collapsible-content open" id="setup-content">
+                <div class="collapsible-content" id="setup-content">
                     <div class="collapsible-content-inner">
                         <table class="calcInputForm">
                             <tbody>
@@ -88,61 +88,132 @@
                                         </div>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <button type="button" onclick="saveSettings()" style="margin-top: 1rem; padding: 0.5rem 1rem; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                            💾 Save Settings
+                                        </button>
+                                        <small style="display: block; margin-top: 0.5rem; color: #666;">
+                                            Settings will be automatically loaded on next visit
+                                        </small>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <form class="calc-form">
-                <table class="calcInputForm">
-                    <tbody>
-                        <tr>
-                            <td>Target Type:</td>
-                            <td>
-                                <div class="radio-group">
-                                    <label>
-                                        <input type="radio" id="getpitch" name="target" value="pitch">
-                                        Metric Pitch (mm)
-                                    </label>
-                                    <label>
-                                        <input type="radio" id="gettpi" name="target" value="tpi" checked>
-                                        Imperial TPI (threads per inch)
-                                    </label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr id="pitch-row" class="hidden">
-                            <td>Target Pitch:</td>
-                            <td>
-                                <input type="number" id="pitch" name="pitch" min="0.1" step="0.05" value="1.5">
-                                <small style="display: inline-block; margin-left: 0.5rem; color: #666;">mm</small>
-                            </td>
-                        </tr>
-                        <tr id="tpi-row">
-                            <td>Target TPI:</td>
-                            <td>
-                                <input type="number" id="tpi" name="tpi" min="0.5" step="0.5" value="16">
-                                <small style="display: inline-block; margin-left: 0.5rem; color: #666;">threads per inch</small>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>
-                                <input type="submit" value="Calculate Gear Combinations">
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </form>
-        </section>
+            <!-- Calculate Single Thread Section (Collapsible) -->
+            <div class="collapsible-section">
+                <div class="collapsible-header" onclick="toggleCollapsible('single')">
+                    <h3>Calculate Single Thread</h3>
+                    <span class="collapsible-toggle open" id="single-toggle">▼</span>
+                </div>
+                <div class="collapsible-content open" id="single-content">
+                    <div class="collapsible-content-inner">
+                        <form class="calc-form">
+                            <table class="calcInputForm">
+                                <tbody>
+                                    <tr>
+                                        <td>Target Type:</td>
+                                        <td>
+                                            <div class="radio-group">
+                                                <label>
+                                                    <input type="radio" id="getpitch" name="target" value="pitch">
+                                                    Metric Pitch (mm)
+                                                </label>
+                                                <label>
+                                                    <input type="radio" id="gettpi" name="target" value="tpi" checked>
+                                                    Imperial TPI (threads per inch)
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr id="pitch-row" class="hidden">
+                                        <td>Target Pitch:</td>
+                                        <td>
+                                            <input type="number" id="pitch" name="pitch" min="0.1" step="0.05" value="1.5">
+                                            <small style="display: inline-block; margin-left: 0.5rem; color: #666;">mm</small>
+                                        </td>
+                                    </tr>
+                                    <tr id="tpi-row">
+                                        <td>Target TPI:</td>
+                                        <td>
+                                            <input type="number" id="tpi" name="tpi" min="0.5" step="0.5" value="16">
+                                            <small style="display: inline-block; margin-left: 0.5rem; color: #666;">threads per inch</small>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <input type="submit" value="Calculate Gear Combinations">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </form>
 
-        <section class="results">
-            <h2>Results</h2>
-            <div id="holder">
-                <p class="info-message">Enter your parameters above and click "Calculate Gear Combinations" to see results.</p>
+                        <div style="margin-top: 2rem;">
+                            <h4>Results</h4>
+                            <div id="holder">
+                                <p class="info-message">Enter your parameters above and click "Calculate Gear Combinations" to see results.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </section>
+
+            <!-- Calculate Threading Chart Section (Collapsible) -->
+            <div class="collapsible-section">
+                <div class="collapsible-header" onclick="toggleCollapsible('chart')">
+                    <h3>Calculate Threading Chart</h3>
+                    <span class="collapsible-toggle" id="chart-toggle">▼</span>
+                </div>
+                <div class="collapsible-content" id="chart-content">
+                    <div class="collapsible-content-inner">
+                        <p style="color: #666; margin-bottom: 1rem;">
+                            Generate a chart of gear combinations for multiple thread specifications at once.
+                        </p>
+
+                        <table class="calcInputForm">
+                            <tbody>
+                                <tr>
+                                    <td style="vertical-align: top;">Target TPI Values:</td>
+                                    <td>
+                                        <textarea id="chart-tpi" rows="4" style="width: 100%; max-width: 400px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;" placeholder="e.g., 8,10,12,14,16,18,20,24"></textarea>
+                                        <small style="display: block; margin-top: 0.5rem; color: #666;">
+                                            Enter comma-separated TPI values (Imperial)
+                                        </small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align: top;">Target Pitch Values:</td>
+                                    <td>
+                                        <textarea id="chart-pitch" rows="4" style="width: 100%; max-width: 400px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;" placeholder="e.g., 0.5,0.75,1.0,1.25,1.5,2.0"></textarea>
+                                        <small style="display: block; margin-top: 0.5rem; color: #666;">
+                                            Enter comma-separated pitch values in mm (Metric)
+                                        </small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <button type="button" onclick="calculateThreadChart()" style="padding: 0.75rem 1.5rem; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; font-weight: bold;">
+                                            📊 Calculate Thread Chart
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div id="chart-results" style="margin-top: 2rem;">
+                            <p class="info-message">Enter TPI and/or pitch values above and click "Calculate Thread Chart" to generate the chart.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         <section class="diagram">
             <h2>Gear Configuration</h2>

@@ -13,17 +13,55 @@ class GearCalculator {
     }
 
     init() {
-        // Load gear values from URL parameters or use defaults
-        const gears1 = this.getParameterByName("gears1", "20,20,20,21,25,30,35,40,40,45,45");
-        const gears2 = this.getParameterByName("gears2", "48,50,50,54,55,57,60,60,65,72,80,80");
-        const gears3 = this.getParameterByName("gears3", "");
-
-        document.getElementById("gears1").value = gears1;
-        document.getElementById("gears2").value = gears2;
-        document.getElementById("gears3").value = gears3;
+        // Try to load from localStorage first, then URL parameters, then defaults
+        this.loadSettings();
 
         this.setupEventListeners();
         this.calculateGears();
+    }
+
+    loadSettings() {
+        const saved = localStorage.getItem('gearCalculatorSettings');
+
+        if (saved) {
+            // Load from localStorage
+            const settings = JSON.parse(saved);
+            document.getElementById("gears1").value = settings.gears1 || "20,20,20,21,25,30,35,40,40,45,45";
+            document.getElementById("gears2").value = settings.gears2 || "48,50,50,54,55,57,60,60,65,72,80,80";
+            document.getElementById("gears3").value = settings.gears3 || "";
+
+            // Set leadscrew type
+            if (settings.leadscrewType === 'metric') {
+                document.getElementById("metric_ls").checked = true;
+            } else {
+                document.getElementById("imperial_ls").checked = true;
+            }
+
+            // Set includeall checkbox
+            document.getElementById("includeall").checked = settings.includeAll !== false;
+        } else {
+            // Load from URL parameters or use defaults
+            const gears1 = this.getParameterByName("gears1", "20,20,20,21,25,30,35,40,40,45,45");
+            const gears2 = this.getParameterByName("gears2", "48,50,50,54,55,57,60,60,65,72,80,80");
+            const gears3 = this.getParameterByName("gears3", "");
+
+            document.getElementById("gears1").value = gears1;
+            document.getElementById("gears2").value = gears2;
+            document.getElementById("gears3").value = gears3;
+        }
+    }
+
+    saveSettings() {
+        const settings = {
+            gears1: document.getElementById("gears1").value,
+            gears2: document.getElementById("gears2").value,
+            gears3: document.getElementById("gears3").value,
+            leadscrewType: document.getElementById("imperial_ls").checked ? 'imperial' : 'metric',
+            includeAll: document.getElementById("includeall").checked
+        };
+
+        localStorage.setItem('gearCalculatorSettings', JSON.stringify(settings));
+        alert('Settings saved! They will be loaded automatically next time.');
     }
 
     setupEventListeners() {
@@ -323,4 +361,214 @@ function toggleCollapsible(sectionId) {
         content.classList.add('open');
         toggle.classList.add('open');
     }
+}
+
+// Global function to save settings (called from HTML button)
+function saveSettings() {
+    // Get the calculator instance from the global scope
+    const gears1 = document.getElementById("gears1").value;
+    const gears2 = document.getElementById("gears2").value;
+    const gears3 = document.getElementById("gears3").value;
+    const leadscrewType = document.getElementById("imperial_ls").checked ? 'imperial' : 'metric';
+    const includeAll = document.getElementById("includeall").checked;
+
+    const settings = {
+        gears1,
+        gears2,
+        gears3,
+        leadscrewType,
+        includeAll
+    };
+
+    localStorage.setItem('gearCalculatorSettings', JSON.stringify(settings));
+    alert('✅ Settings saved! They will be loaded automatically next time.');
+}
+
+// Global function to calculate thread chart
+function calculateThreadChart() {
+    const chartTpiInput = document.getElementById("chart-tpi").value;
+    const chartPitchInput = document.getElementById("chart-pitch").value;
+    const resultsDiv = document.getElementById("chart-results");
+
+    // Parse inputs
+    const parseValues = (str) => str.replace(/\s/g, '')
+        .replace(/,*$/g, '')
+        .replace(/^,*/g, '')
+        .split(',')
+        .map(Number)
+        .filter(n => !isNaN(n) && n > 0);
+
+    const tpiValues = chartTpiInput ? parseValues(chartTpiInput) : [];
+    const pitchValues = chartPitchInput ? parseValues(chartPitchInput) : [];
+
+    if (tpiValues.length === 0 && pitchValues.length === 0) {
+        resultsDiv.innerHTML = "<p class='error-message'>Please enter at least one TPI or pitch value.</p>";
+        return;
+    }
+
+    // Get gears
+    const gears1 = parseValues(document.getElementById("gears1").value);
+    const gears2 = parseValues(document.getElementById("gears2").value);
+    const gears3 = parseValues(document.getElementById("gears3").value);
+    const gears = [...gears1, ...gears2, ...gears3];
+
+    if (gears.length === 0) {
+        resultsDiv.innerHTML = "<p class='error-message'>Please enter available gears in the Setup section.</p>";
+        return;
+    }
+
+    // Get leadscrew type
+    const imperialLeadscrew = document.getElementById("imperial_ls").checked;
+    const leadscrewTpi = imperialLeadscrew ? 16 : null;
+
+    // Create calculator instance to use getGears method
+    const calc = new GearCalculator();
+    const chartData = [];
+
+    // Calculate for TPI values
+    tpiValues.forEach(targetTpi => {
+        const args = {
+            gears: gears,
+            tpi: targetTpi
+        };
+        if (leadscrewTpi) {
+            args.leadscrew_tpi = leadscrewTpi;
+        }
+
+        const solutions = calc.getGears(args);
+        if (solutions.length > 0) {
+            const sol = solutions[0]; // Pick first solution
+            chartData.push({
+                target: `${targetTpi} TPI`,
+                gearA: sol.Gears[0] || '-',
+                gearB: sol.Gears[1] === null ? 'ANY' : (sol.Gears[1] || '-'),
+                gearC: sol.Gears[2] || '-',
+                gearD: sol.Gears[3] || '-',
+                actual: calc.formatNumber(sol.TPI) + ' TPI',
+                error: ((sol.TPI - targetTpi) / targetTpi * 100).toFixed(4) + '%'
+            });
+        } else {
+            chartData.push({
+                target: `${targetTpi} TPI`,
+                gearA: 'N/A',
+                gearB: 'N/A',
+                gearC: 'N/A',
+                gearD: 'N/A',
+                actual: 'No solution',
+                error: 'N/A'
+            });
+        }
+    });
+
+    // Calculate for pitch values
+    pitchValues.forEach(targetPitch => {
+        const args = {
+            gears: gears,
+            pitch: targetPitch
+        };
+        if (leadscrewTpi) {
+            args.leadscrew_tpi = leadscrewTpi;
+        }
+
+        const solutions = calc.getGears(args);
+        if (solutions.length > 0) {
+            const sol = solutions[0]; // Pick first solution
+            chartData.push({
+                target: `${targetPitch} mm`,
+                gearA: sol.Gears[0] || '-',
+                gearB: sol.Gears[1] === null ? 'ANY' : (sol.Gears[1] || '-'),
+                gearC: sol.Gears[2] || '-',
+                gearD: sol.Gears[3] || '-',
+                actual: calc.formatNumber(sol.Pitch) + ' mm',
+                error: ((sol.Pitch - targetPitch) / targetPitch * 100).toFixed(4) + '%'
+            });
+        } else {
+            chartData.push({
+                target: `${targetPitch} mm`,
+                gearA: 'N/A',
+                gearB: 'N/A',
+                gearC: 'N/A',
+                gearD: 'N/A',
+                actual: 'No solution',
+                error: 'N/A'
+            });
+        }
+    });
+
+    // Display results
+    displayThreadChart(chartData);
+}
+
+function displayThreadChart(chartData) {
+    const resultsDiv = document.getElementById("chart-results");
+
+    if (chartData.length === 0) {
+        resultsDiv.innerHTML = "<p class='error-message'>No results to display.</p>";
+        return;
+    }
+
+    let html = '<div style="overflow-x: auto;">';
+    html += '<table class="asbTable tightHeight">';
+    html += '<thead><tr>';
+    html += '<th class="border"><b>Target</b></th>';
+    html += '<th class="border"><b>Gear A</b></th>';
+    html += '<th class="border"><b>Gear B</b></th>';
+    html += '<th class="border"><b>Gear C</b></th>';
+    html += '<th class="border"><b>Gear D</b></th>';
+    html += '<th class="border"><b>Actual</b></th>';
+    html += '<th class="border"><b>Error %</b></th>';
+    html += '</tr></thead>';
+    html += '<tbody>';
+
+    chartData.forEach(row => {
+        html += '<tr>';
+        html += `<td class="border">${row.target}</td>`;
+        html += `<td class="border">${row.gearA}</td>`;
+        html += `<td class="border">${row.gearB}</td>`;
+        html += `<td class="border">${row.gearC}</td>`;
+        html += `<td class="border">${row.gearD}</td>`;
+        html += `<td class="border">${row.actual}</td>`;
+        html += `<td class="border">${row.error}</td>`;
+        html += '</tr>';
+    });
+
+    html += '</tbody></table></div>';
+
+    // Add export button
+    html += '<button type="button" onclick="exportChartToCSV()" style="margin-top: 1rem; padding: 0.5rem 1rem; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer;">';
+    html += '📥 Export as CSV';
+    html += '</button>';
+
+    resultsDiv.innerHTML = html;
+
+    // Store chart data globally for export
+    window.currentChartData = chartData;
+}
+
+// Global function to export chart to CSV
+function exportChartToCSV() {
+    if (!window.currentChartData || window.currentChartData.length === 0) {
+        alert('No chart data to export.');
+        return;
+    }
+
+    // Create CSV content
+    let csv = 'Target,Gear A,Gear B,Gear C,Gear D,Actual,Error %\n';
+
+    window.currentChartData.forEach(row => {
+        csv += `"${row.target}",${row.gearA},${row.gearB},${row.gearC},${row.gearD},"${row.actual}","${row.error}"\n`;
+    });
+
+    // Create blob and download
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'thread_chart_' + new Date().toISOString().slice(0,10) + '.csv');
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
