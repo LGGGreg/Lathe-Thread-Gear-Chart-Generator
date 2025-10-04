@@ -384,6 +384,115 @@ function saveSettings() {
     alert('✅ Settings saved! They will be loaded automatically next time.');
 }
 
+/**
+ * Optimize gear selection to minimize changes across chart
+ *
+ * Algorithm: Greedy Frequency-Based Selection
+ * 1. Get all possible solutions for each target (up to 10 per target)
+ * 2. Build frequency map: count how often each gear appears in each position
+ * 3. Score each solution based on:
+ *    - Frequency score: how common is this gear in this position? (×10 points)
+ *    - Reuse bonus: is this gear already selected for this position? (+100 points)
+ * 4. Greedy selection: for each target, pick the highest-scoring solution
+ * 5. Update tracking as we go to prefer already-selected gears
+ *
+ * This minimizes gear changes by preferring:
+ * - Gears that appear frequently across many threads
+ * - Gears already selected for previous threads
+ *
+ * Complexity: O(n * m) where n = targets, m = solutions per target (max 10)
+ * Max iterations: n * 10 (typically 34 * 10 = 340, well under 100 per target)
+ */
+function optimizeGearSelections(targets, calc, gears, leadscrewTpi) {
+    // Step 1: Get all solutions for all targets
+    const allSolutions = targets.map(target => {
+        const args = { gears: gears };
+        if (target.type === 'tpi') {
+            args.tpi = target.value;
+        } else {
+            args.pitch = target.value;
+        }
+        if (leadscrewTpi) {
+            args.leadscrew_tpi = leadscrewTpi;
+        }
+
+        const solutions = calc.getGears(args);
+        return {
+            target: target,
+            solutions: solutions.slice(0, 10) // Limit to top 10 solutions per target
+        };
+    });
+
+    // Step 2: Build frequency map of all gears in all solutions
+    const gearFrequency = {};
+    allSolutions.forEach(item => {
+        item.solutions.forEach(sol => {
+            for (let i = 0; i < 4; i++) {
+                const gear = sol.Gears[i];
+                if (gear !== null && gear !== undefined) {
+                    const key = `pos${i}_${gear}`;
+                    gearFrequency[key] = (gearFrequency[key] || 0) + 1;
+                }
+            }
+        });
+    });
+
+    // Step 3: Score each solution based on gear commonality
+    const scoreSolution = (solution, selectedGears) => {
+        let score = 0;
+        for (let i = 0; i < 4; i++) {
+            const gear = solution.Gears[i];
+            if (gear !== null && gear !== undefined) {
+                // Frequency score: how common is this gear in this position?
+                const freqKey = `pos${i}_${gear}`;
+                score += (gearFrequency[freqKey] || 0) * 10;
+
+                // Reuse bonus: have we already selected this gear for this position?
+                const selectedKey = `pos${i}_${gear}`;
+                if (selectedGears[selectedKey]) {
+                    score += 100; // Big bonus for reusing already-selected gears
+                }
+            }
+        }
+        return score;
+    };
+
+    // Step 4: Greedy selection - pick best solution for each target
+    const selectedSolutions = [];
+    const selectedGears = {}; // Track which gears we've used in which positions
+
+    allSolutions.forEach(item => {
+        if (item.solutions.length === 0) {
+            selectedSolutions.push(null); // No solution available
+            return;
+        }
+
+        // Score all solutions for this target
+        const scoredSolutions = item.solutions.map(sol => ({
+            solution: sol,
+            score: scoreSolution(sol, selectedGears)
+        }));
+
+        // Sort by score (highest first)
+        scoredSolutions.sort((a, b) => b.score - a.score);
+
+        // Select the best solution
+        const best = scoredSolutions[0].solution;
+        selectedSolutions.push(best);
+
+        // Update selected gears tracking
+        for (let i = 0; i < 4; i++) {
+            const gear = best.Gears[i];
+            if (gear !== null && gear !== undefined) {
+                const key = `pos${i}_${gear}`;
+                selectedGears[key] = true;
+            }
+        }
+    });
+
+    return selectedSolutions;
+}
+
 // Global function to calculate thread chart
 function calculateThreadChart() {
     const chartTpiInput = document.getElementById("chart-tpi").value;
@@ -423,21 +532,24 @@ function calculateThreadChart() {
 
     // Create calculator instance to use getGears method
     const calc = new GearCalculator();
+
+    // Build target list for optimization
+    const targets = [];
+    tpiValues.forEach(tpi => targets.push({ type: 'tpi', value: tpi }));
+    pitchValues.forEach(pitch => targets.push({ type: 'pitch', value: pitch }));
+
+    // Use optimization algorithm to select best gear combinations
+    const optimizedSolutions = optimizeGearSelections(targets, calc, gears, leadscrewTpi);
+
+    // Build chart data from optimized solutions
     const chartData = [];
+    let targetIndex = 0;
 
-    // Calculate for TPI values
+    // Add TPI solutions
     tpiValues.forEach(targetTpi => {
-        const args = {
-            gears: gears,
-            tpi: targetTpi
-        };
-        if (leadscrewTpi) {
-            args.leadscrew_tpi = leadscrewTpi;
-        }
+        const sol = optimizedSolutions[targetIndex++];
 
-        const solutions = calc.getGears(args);
-        if (solutions.length > 0) {
-            const sol = solutions[0]; // Pick first solution
+        if (sol) {
             chartData.push({
                 type: 'tpi',
                 target: `${targetTpi} TPI`,
@@ -476,19 +588,11 @@ function calculateThreadChart() {
         });
     }
 
-    // Calculate for pitch values
+    // Add pitch solutions
     pitchValues.forEach(targetPitch => {
-        const args = {
-            gears: gears,
-            pitch: targetPitch
-        };
-        if (leadscrewTpi) {
-            args.leadscrew_tpi = leadscrewTpi;
-        }
+        const sol = optimizedSolutions[targetIndex++];
 
-        const solutions = calc.getGears(args);
-        if (solutions.length > 0) {
-            const sol = solutions[0]; // Pick first solution
+        if (sol) {
             chartData.push({
                 type: 'pitch',
                 target: `${targetPitch} mm`,
