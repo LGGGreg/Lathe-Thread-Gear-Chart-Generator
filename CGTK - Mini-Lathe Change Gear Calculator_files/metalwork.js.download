@@ -1,0 +1,244 @@
+var units = "metric";
+
+S.extendPrototype();
+
+function commonPageLoad(numEntryChangedFn) {
+	if (numEntryChangedFn === undefined) {
+		numEntryChangedFn = numberEntryChanged;
+	}
+	// Assumes class metric-imperial-length for fields that only accept metric/imperial
+	var numberOnly = document.querySelectorAll('.metric-imperial-length');
+	var numLen = numberOnly.length;
+	var i;
+	var ele;
+	for (i=0;i<numLen;i++) {
+		ele = numberOnly[i];
+		ele.onkeypress = numberEntryKeypress;
+		ele.onkeyup = numEntryChangedFn;
+		ele.onchange = numEntryChangedFn;
+		ele.onpaste = function(e){
+			e.preventDefault();
+		};
+	}
+	// Assumes class autoupdate for automatically running a changed function
+	var autoUpdate = document.querySelectorAll('.autoupdate');
+	var autoLen = autoUpdate.length;
+	for (i=0;i<autoLen;i++) {
+		ele = autoUpdate[i];
+		ele.onchange = numEntryChangedFn;
+	}
+}
+
+function convertToMetric(s) {
+	var default_unit = units;
+	var numberString = s.trim().replace(',', '.');
+	if (numberString.length === 0) {
+		return 0;
+	}
+	if (numberString.endsWith("mm")) {
+		default_unit = "metric";
+		numberString = numberString.slice(0, -2).trim();
+	}
+	else if (numberString.endsWith('"')) {
+		default_unit = "imperial";
+		numberString = numberString.slice(0, -1).trim();
+	}
+	else {
+	}
+	numberString = numberString.replace(/ /g, ' ');
+
+	var numberParts = numberString.split(/[ +]/);
+	if (numberParts.length > 2) {
+		return null;
+	}
+
+	/* Convert a fraction in the last part to a decimal value */
+	var lastPart = numberParts[numberParts.length-1];
+	if (lastPart.contains('/')) {
+		var components = lastPart.split('/');
+		if (components.length !== 2) {
+			return null;
+		}
+		try {
+			/* Allow typing of '/' without preventing input */
+			if (components[1].length === 0) {
+				components[1] = '1';
+			}
+			numberParts[numberParts.length-1] = parseFloat(components[0])/parseFloat(components[1]);
+		}
+		catch (err) {
+			return null;
+		}
+	}
+
+    var value;
+	try {
+		value = 0.0;
+		for (var i=0;i<numberParts.length;i++) {
+			value += parseFloat(numberParts[i]);
+		}
+	}
+	catch (err) {
+		return null;
+	}
+
+	if (default_unit === "metric") {
+		return value;
+	}
+	else {
+		return value * 25.4;
+	}
+}
+
+function useCommaAsDecimal() {
+	var usecommacheck = document.getElementById("commaasdecimal");
+	var result;
+	usecomma = false;
+	if (usecommacheck !== null) {
+		usecomma = usecommacheck.checked;
+	}
+	return usecomma;
+}
+
+function applyCommaIfRequired(s) {
+	if (useCommaAsDecimal()) {
+		return s.replace('.', ',');
+	}
+	else {
+		return s;
+	}
+}
+
+function convertToDisplayUnit(value) {
+	if (units === "metric") {
+		result = value.toFixed(2);
+	}
+	else {
+		result = (value / 25.4).toFixed(3);
+	}
+	if (useCommaAsDecimal()) {
+		result = result.replace('.', ',');
+	}
+	return result;
+}
+
+function deg_to_dms(deg) {
+	var d = Math.floor(deg);
+	var minfloat = (deg-d)*60;
+	var m = Math.floor(minfloat);
+	var secfloat = (minfloat-m)*60;
+	var s = Math.round(secfloat);
+	// After rounding, the seconds might become 60. These two
+	// if-tests are not necessary if no rounding is done.
+	if (s === 60) {
+		m++;
+		s = 0;
+	}
+	if (m === 60) {
+		d++;
+		m = 0;
+	}
+	return ("" + d + "\xB0" + m + "'" + s + '"');
+}
+
+function numberEntryKeypress(e) {
+	var mm_value = convertToMetric(this.value+""+String.fromCharCode(e.charCode));
+	if (mm_value === null) {
+		return false;
+	}
+}
+
+function autoConversions(entries, metricPlaces) {
+    // Automatic conversion where there's an entry box called "x" and conversion boxes
+    // called "x-mm" and "x-inch"
+	var v;
+	if (metricPlaces === undefined) {
+	    metricPlaces = 2;
+    }
+	for (var i=0;i<entries.length;i++) {
+		v = convertToMetric(document.getElementById(entries[i]).value);
+
+		var metric_value = v.toFixed(metricPlaces);
+		var imp_value = (v/25.4).toFixed(metricPlaces+1);
+
+		if (useCommaAsDecimal()) {
+		    metric_value = metric_value.replace('.', ',');
+		    imp_value = imp_value.replace('.', ',');
+		}
+
+		document.getElementById(entries[i]+"-mm").innerHTML = metric_value + "&nbsp;mm";
+		document.getElementById(entries[i]+"-inch").innerHTML = imp_value + '"';
+	}
+}
+
+function autoUnitHiding(entries) {
+    // Update units - assumes where there is an entry called "x" that there are
+    // "x-header-unit", "x-unit", "x-mm" and "x-inch"
+	var hutext = "&nbsp;(mm)";
+	var utext  = "&nbsp;mm";
+	var mmvisibility = "visible"; // "hidden";
+	var inchvisibility = "visible";
+
+    if (units !== "metric") {
+		units = "imperial";
+		hutext = '&nbsp;(inches)';
+		utext = '"';
+		mmvisibility = "visible";
+		inchvisibility = "visible"; // "hidden";
+    }
+	var len = entries.length;
+	for (var i=0;i<len;i++) {
+		document.getElementById(entries[i]+"-header-unit").innerHTML = hutext;
+		document.getElementById(entries[i]+"-unit").innerHTML = utext;
+		document.getElementById(entries[i]+"-mm").style.visibility = mmvisibility;
+		document.getElementById(entries[i]+"-inch").style.visibility = inchvisibility;
+	}
+}
+
+function engFormat(value) {
+    var absolute = Math.abs(value);
+    var places = 4;
+    var trim_zeroes = true;
+    var sign = 1;
+    var realnumber = value;
+    if (value < 0) {
+        sign = -1;
+    }
+    if (value == 0.0) {
+        return "0.0";
+    }
+
+    var exponent = Math.floor(Math.log10(absolute));
+    exponent = 3 * Math.floor(exponent / 3);
+    realnumber = realnumber / Math.pow(10.0, exponent);
+
+    // Check whether rounding bumps exponent
+    var temp = realnumber * Math.pow(10.0, places);
+    temp = Math.round(temp);
+    realnumber = temp / Math.pow(10.0, places);
+
+    absolute = Math.abs(realnumber);
+
+    if (absolute >= 1000.0) {
+        realnumber /= 1000.0;
+        exponent += 3;
+    }
+
+    var formatted = realnumber.toFixed(places);
+    if (formatted.indexOf(".") !== -1) {
+        formatted = formatted.replace(/0+$/, '');
+        if (formatted[formatted.length-1] == ".") {
+            formatted += "0";
+        }
+    }
+
+    if (exponent != 0) {
+        formatted += "&times;10<sup>"; // <small>";
+        var exponentStr = exponent.toFixed(0);
+        formatted += exponentStr;
+        //formatted += "</small>";
+        formatted += "</sup>";
+    }
+    formatted = formatted.replace('-', '&ndash;')
+    return formatted;
+}

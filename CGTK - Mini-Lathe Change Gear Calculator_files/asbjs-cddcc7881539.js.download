@@ -1,0 +1,155 @@
+/* Javascript to be included with every page */
+
+var sitename = 'miscellany';
+
+function startsWith(str, prefix) {
+    return str.indexOf(prefix) === 0;
+}
+
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
+function getURLWithoutQuery() {
+    var url = [location.protocol, '//', location.host, location.pathname].join('');
+    while (endsWith(url, '#')) {
+        url = url.substring(0, url.length-1);
+    }
+    return url;
+}
+
+function getURLWithoutHash() {
+    var url = document.URL;
+    while (endsWith(url, '#')) {
+        url = url.substring(0, url.length-1);
+    }
+    return url;
+}
+
+function getURLPathWithoutHash() {
+    var pathname = location.pathname+location.search;
+    while (endsWith(pathname, '#')) {
+        pathname = pathname.substring(0, pathname.length-1);
+    }
+    return pathname;
+}
+
+function getParameterByName(name, def_value) {
+    if (typeof(def_value) === "undefined") {
+        def_value = "";
+    }
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? def_value : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+function getBooleanParameterByName(name) {
+    var strresult = getParameterByName(name);
+    if (strresult === "true") {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+function getURLPathWithoutQuery() {
+    var pathname = location.pathname;
+    while (endsWith(pathname, '#')) {
+        pathname = pathname.substring(0, pathname.length-1);
+    }
+    return pathname;
+}
+
+function updateURLWithoutReload(newurl) {
+    if (window.history && window.history.pushState) {
+        /* Not really sure what this is doing */
+        var state = {
+            canBeAnything: true
+        };
+        window.history.pushState(state, document.title, newurl);
+    }
+    else {
+        /* Ancient browser (e.g. IE9) */
+    }
+}
+
+function updateURLWithQuery(parameter, value) {
+    var baseURL = getURLWithoutHash();
+    var result = "";
+
+    var re = new RegExp("([?&])" + parameter + "=.*?(&|$)", "i");
+    var separator = baseURL.indexOf('?') !== -1 ? "&" : "?";
+    if (baseURL.match(re)) {
+        result = baseURL.replace(re, '$1' + parameter + "=" + value + '$2');
+    }
+    else {
+        result = baseURL + separator + parameter + "=" + value;
+    }
+    updateURLWithoutReload(result);
+}
+
+function scrollFunction() {
+    var contentscroll = document.getElementById("contentscrollup");
+    const pixels = 100;
+
+    if ((document.body.scrollTop > pixels) || (document.documentElement.scrollTop > pixels)) {
+        contentscroll.style.display = "block";
+    }
+    else {
+        contentscroll.style.display = "none";
+    }
+}
+
+window.onscroll = scrollFunction;
+
+function scrollToTop() {
+    document.body.scrollTop = 0; // For Safari
+    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+}
+
+(function($) {
+    var $window = $(window);
+    $window.on('load', function() {
+        var url = getURLPathWithoutQuery();
+        while (startsWith(url, '/')) {
+            url = url.substr(1);
+        }
+        while (endsWith(url, '/')) {
+            url = url.substr(0, url.length-1);
+        }
+        url = url.replaceAll('/', '-');
+
+        var target_opener = "menuopen-" + url;
+
+        var $menu = $('#menu');
+        var $menu_openers = $menu.children('ul').find('.opener');
+
+        var openers = $('*[class*="menuopen-"]')
+          .filter(function () {
+                  return this.className.match(/(?:^|\s)menuopen-/);
+                });
+
+        openers.each(function(index, opener) {
+            var classbit = opener.className.split(' ').filter(function(element) {
+                return element.match(/^menuopen-/);
+            });
+            if (classbit.length != 1) {
+                return;
+            }
+            classbit = classbit[0];
+
+            if (startsWith(target_opener, classbit) && (target_opener != classbit)) {
+                $menu_openers.not($(opener)).removeClass('active');
+                $(opener).toggleClass('active');
+                $window.triggerHandler('resize.sidebar-lock');
+            }
+        });
+
+        $('.scrollupbtn').each(function() {
+            $(this).on('click', scrollToTop);
+        });
+    });
+
+})(jQuery);

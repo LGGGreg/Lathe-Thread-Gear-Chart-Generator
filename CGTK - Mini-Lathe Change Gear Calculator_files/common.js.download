@@ -1,0 +1,614 @@
+/*jshint sub:true*/
+function makeExplicitLink(link, newwindow) {
+    if (typeof(newwindow) === "undefined") {
+        newwindow = false;
+    }
+    if (newwindow) {
+        extra = ' target="_blank"';
+    }
+    else {
+        extra = "";
+    }
+    return '<a href="'+link+'"'+extra+'>'+link+'</a>';
+}
+
+function zeros(dimensions) {
+    var array = [];
+
+    for (var i = 0; i < dimensions[0]; ++i) {
+        array.push(dimensions.length === 1 ? 0 : zeros(dimensions.slice(1)));
+    }
+    return array;
+}
+
+function falses(dimensions) {
+    var array = [];
+
+    for (var i = 0; i < dimensions[0]; ++i) {
+        array.push(dimensions.length === 1 ? false : blankarrays(dimensions.slice(1)));
+    }
+
+    return array;
+}
+
+function blankarrays(dimensions) {
+    var array = [];
+
+    for (var i = 0; i < dimensions[0]; ++i) {
+        array.push(dimensions.length === 1 ? [] : blankarrays(dimensions.slice(1)));
+    }
+
+    return array;
+}
+
+function pad(n, width, z) {
+	z = z || '0';
+	n = Math.round(n) + '';
+	return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
+
+function rpadtext(s, width, z) {
+    z = z || ' ';
+    return s.length >= width ? s : s + new Array(width - s.length + 1).join(z);
+}
+
+function lpadtext(s, width, z) {
+    z = z || ' ';
+    return s.length >= width ? s : new Array(width - s.length + 1).join(z) + s;
+}
+
+function toFixedMaxPlaces(s, n) {
+    var str = s.toFixed(n);
+    if ((str.indexOf('.') !== -1) || (str.indexOf(',') !== -1)) {
+        while (str.slice(-1) === '0') {
+            str = str.slice(0,-1);
+        }
+        if ((str.slice(-1) === '.') || (str.slice(-1) === ',')) {
+            str = str.slice(0,-1);
+        }
+    }
+    return str;
+}
+
+function dateToYYYYMMDD(d) {
+    return d.getFullYear()+pad(d.getMonth()+1, 2)+pad(d.getDate(), 2);
+}
+
+function dateToString(format, d) {
+    var r = format;
+    r = r.replace('yyyy', String(d.getFullYear()));
+    r = r.replace('mm', pad(d.getMonth()+1, 2));
+    r = r.replace('dd', pad(d.getDate(), 2));
+    r = r.replace('HH', pad(d.getHours(), 2));
+    r = r.replace('MM', pad(d.getMinutes(), 2));
+    r = r.replace('SS', pad(d.getSeconds(), 2));
+    return r;
+}
+
+function createFileDownloadLink(content, mimetype, filename, linktext) {
+    var formBlob = new Blob([content], {type: mimetype});
+    var link = document.createElement('a');
+    var linktextobj = document.createTextNode(linktext);
+    //link.href = window.URL.createObjectURL(formBlob);
+    link.href = "#";
+    link.onclick = function() {
+        saveAs(formBlob, filename);
+        return false;
+    };
+    link.appendChild(linktextobj);
+    //link.download = filename;
+    return link;
+}
+
+function createImageLink(canvas, filename, linktext) {
+	if (typeof(linktext) === "undefined") {
+		linktext = "Download image";
+	}
+	var link = document.createElement('a');
+	var linktextobj = document.createTextNode(linktext);
+	link.href = "#";
+	link.onclick = function() {
+		canvas.toBlob(function(blob) {
+			saveAs(blob, filename);
+		});
+		return false;
+	};
+	link.appendChild(linktextobj);
+	var imagePara = document.createElement('p');
+	imagePara.appendChild(link);
+	return imagePara;
+}
+
+function nativeLineEnd() {
+    var lineend = '\n';
+    if (navigator.appVersion.indexOf("Win") !== -1) {
+        lineend = '\r\n'; // Ick
+    }
+    return lineend;
+}
+
+function getSplitLine(entry, width) {
+    var splitre = /([-!@#,/&* ])/;
+    var result = [];
+    if (entry.length <= width) {
+        return [entry];
+    }
+    result = entry.split(splitre);
+    for (var i=(result.length-1);i>=0;i--) {
+        var item = result[i];
+        if (item.length > width) {
+            result[i] = item.substring(0,width);
+            result.splice(i+1, 0, item.substring(width));
+        }
+        else if (item.length === 0) {
+            result.splice(i,1);
+        }
+    }
+    var copy = result.slice();
+    while ((copy.length > 1) && ((copy[0]+copy[1]).length <= width)) {
+        copy = [copy[0]+copy[1]].concat(copy.slice(2));
+    }
+    result = [copy[0], copy.slice(1).join("")];
+    return [result[0]].concat(getSplitLine(result[1], width));
+}
+
+function getTableEntryText(entry) {
+    var result;
+    if (typeof(entry) === 'object') {
+        result = String(entry['Text']);
+    }
+    else {
+        result = String(entry);
+    }
+    return result;
+}
+
+function createWidthLimitedASCIITable(table, maxwidth) {
+    var colwidths = zeros([table[0].length]);
+    // Only actually the minimum width if the column is longer
+    // than this; otherwise force AllowASCIIWrap off.
+    var minwidths = zeros([table[0].length]);
+    var allow_wrap = falses([table[0].length]);
+    var row, col, entry;
+    var nl = nativeLineEnd();
+
+    var header_char = '=';
+    var interrow_char = '-';
+    
+    if (getBooleanParameterByName("no_row_lines")) {
+        header_char = '-';
+        interrow_char = '';
+    }
+
+    for (row=0;row<table.length;row++) {
+        for (col=0;col<table[row].length;col++) {
+            if (typeof(table[row][col]) === 'object') {
+                entry = String(table[row][col]['Text']);
+                if (('AllowASCIIWrap' in table[row][col]) && table[row][col]['AllowASCIIWrap']) {
+                    allow_wrap[col] = true;
+                }
+                if ('MinASCIIWidth' in table[row][col]) {
+                    minwidths[col] = table[row][col]['MinASCIIWidth'];
+                }
+            }
+            else {
+                entry = String(table[row][col]);
+            }
+            if (entry.length > colwidths[col]) {
+                colwidths[col] = entry.length;
+            }
+        }
+    }
+
+    var totalwidth = 3*(colwidths.length-1);
+    for (col=0;col<colwidths.length;col++) {
+        totalwidth += colwidths[col];
+    }
+
+    if (totalwidth > maxwidth) {
+        var reduce_by = totalwidth - maxwidth;
+        var num_wraps = 0;
+        for (col=0;col<colwidths.length;col++) {
+            if (minwidths[col] !== 0) {
+                if (colwidths[col] > minwidths[col]) {
+                    // Immediately drop this to the minimum
+                    reduce_by -= colwidths[col] - minwidths[col];
+                    colwidths[col] = minwidths[col];
+                }
+                allow_wrap[col] = false;
+            }
+            if (allow_wrap[col]) {
+                num_wraps += 1;
+            }
+        }
+
+        if (num_wraps > 0) {
+            var initial_drop = Math.ceil(reduce_by*1.0/num_wraps);
+            for (col=0;col<colwidths.length;col++) {
+                if (allow_wrap[col]) {
+                    colwidths[col] -= initial_drop;
+                }
+                if (colwidths[col] <= 0) {
+                    console.log("Column too narrow");
+                    colwidths[col] = 1;
+                }
+            }
+        }
+    }
+    else {
+        interrow_char = '';
+        header_char = '-';
+    }
+
+    var result = '';
+    var wrap_rows = 0;
+    var linelen;
+    for (row=0;row<table.length;row++) {
+        wrap_rows = 0;
+        var wrap_entries = blankarrays([table[0].length]);
+        for (col=0;col<table[row].length;col++) {
+            entry = getTableEntryText(table[row][col]);
+            // Don't use allow_wraps here due to handling
+            // of minwidths above
+            if (entry.length > colwidths[col]) {
+                var split_line = getSplitLine(entry, colwidths[col]);
+                entry = split_line[0];
+                split_line = split_line.slice(1);
+                if (split_line.length > wrap_rows) {
+                    wrap_rows = split_line.length;
+                }
+                wrap_entries[col] = split_line;
+            }
+            entry = rpadtext(entry, colwidths[col]);
+            result += entry;
+            if (col !== (table[row].length - 1)) {
+                result += ' | ';
+            }
+        }
+
+        if (row === 0) {
+            linelen = result.length;
+        }
+
+        while (wrap_rows > 0) {
+            result = S(result).trimRight().s;
+            result += nl;
+            for (col=0;col<wrap_entries.length;col++) {
+                if (wrap_entries[col].length > 0) {
+                    result += rpadtext(wrap_entries[col][0], colwidths[col]);
+                    wrap_entries[col] = wrap_entries[col].slice(1);
+                }
+                else {
+                    result += new Array(colwidths[col]+1).join(' ');
+                }
+                if (col !== (table[row].length-1)) {
+                    result += ' | ';
+                }
+            }
+            wrap_rows -= 1;
+        }
+
+        result = S(result).trimRight().s;
+        result += nl;
+        if (row === 0) {
+            result += new Array(linelen+1).join(header_char);
+        }
+        else if ((interrow_char.length > 0) && (row < (table.length-1))) {
+            result += new Array(linelen+1).join(interrow_char);
+        }
+        result = S(result).trimRight().s;
+        result += nl;
+    }
+    return result;
+}
+
+function createMarkdownTablelessTable(table) {
+    var row, col, entry;
+    var lineend = nativeLineEnd();
+    var result = '';
+    var isincr = true;
+    // Check whether the first column is an incrementing number list
+    for (row=1;row<table.length;row++) {
+        if (getTableEntryText(table[row][0]) != row) {
+            isincr = false;
+            break;
+        }
+    }
+    result += "Columns are: ";
+    for (col=0;col<table[0].length;col++) {
+        if (isincr && (col === 0)) {
+            continue;
+        }
+        if ( ! ((col === 0) || (isincr && (col === 1)))) {
+            result += ", ";
+        }
+        result += getTableEntryText(table[0][col]);
+    }
+    result += lineend + lineend;
+    for (row=1;row<table.length;row++) {
+        for (col=0;col<table[row].length;col++) {
+            if (col === 0) {
+                result += "" + (row) + ". ";
+                if (isincr) {
+                    continue;
+                }
+            }
+            if ( ! ((col === 0) || ((col === 1) & isincr))) {
+                result += "| ";
+            }
+            entry = getTableEntryText(table[row][col]);
+            result += entry;
+        }
+        result += lineend;
+    }
+    return result;
+}
+
+function createASCIITable(table, maxwidth) {
+    if (typeof(maxwidth) !== "undefined") {
+        return createWidthLimitedASCIITable(table, maxwidth);
+    }
+    /* Get column widths */
+    var colwidths = zeros([table[0].length]);
+    var row, col;
+    var entry;
+    for (row=0;row<table.length;row++) {
+        for (col=0;col<table[row].length;col++) {
+            entry = getTableEntryText(table[row][col]);
+            
+            if (entry.length > colwidths[col]) {
+                colwidths[col] = entry.length;
+            }
+        }
+    }
+
+    var lineend = nativeLineEnd();
+    var result = '';
+    for (row=0;row<table.length;row++) {
+        for (col=0;col<table[row].length;col++) {
+            entry = getTableEntryText(table[row][col]);
+            entry = rpadtext(entry, colwidths[col]);
+            result += entry;
+            if (col !== (table[row].length - 1)) {
+                result += ' | ';
+            }
+        }
+        if (row === 0) {
+            var linelength = result.length;
+            result += lineend;
+            result += new Array(linelength+1).join('-');
+        }
+        result += lineend;
+    }
+    return result;
+}
+
+function createCSVTable(table) {
+    var result = '';
+    for (var row=0;row<table.length;row++) {
+        for (var col=0;col<table[row].length;col++) {
+            if (col !== 0) {
+                result += ',';
+            }
+            result += getTableEntryText(table[row][col]);
+        }
+        result += '\n';
+    }
+    return result;
+}
+
+function replaceSpaceAndAmpersand(s) {
+    return replaceSpaceWithNBSP(replaceAmpersand(s));
+}
+
+function replaceAmpersand(s) {
+    return s.replace(/&(?!amp;)/g, '&amp;');
+}
+
+function replaceSpaceWithNBSP(s) {
+    return s.replace(/ /g, '&nbsp;');
+}
+
+function createBBCodeTable(table) {
+    var nl = nativeLineEnd();
+    var result = '[TABLE]'+nl;
+    for (var row=0;row<table.length;row++) {
+        result += '[TR]';
+        for (var col=0;col<table[row].length;col++) {
+            var entry = getTableEntryText(table[row][col]);
+            if (row === 0) {
+                result += '[TD][B]'+entry+'[/B][/TD]';
+            }
+            else {
+                result += '[TD]'+entry+'[/TD]';
+            }
+        }
+        result += '[/TR]'+nl;
+    }
+    result += '[/TABLE]'+nl;
+}
+
+
+function createHTMLTable(table, noheader) {
+    if (typeof(noheader) === "undefined") {
+        noheader = false;
+    }
+    var result = '<table>';
+    for (var row=0;row<table.length;row++) {
+        result += '<tr>';
+        for (var col=0;col<table[row].length;col++) {
+            var entry = table[row][col];
+            if (typeof(entry) !== 'object') {
+                entry = {'Text': entry};
+            }
+            entry['Text'] = String(entry['Text']);
+
+            if ('Width' in entry) {
+                entry['WidthSpec'] = ' width="'+entry['Width']+'"';
+            }
+            else {
+                entry['WidthSpec'] = '';
+            }
+            if ('Align' in entry) {
+                entry['AlignSpec'] = ' style="text-align: '+entry['Align']+';"';
+            }
+            else {
+                entry['AlignSpec'] = '';
+            }
+
+            entry['HTML'] = replaceAmpersand(entry['Text']);
+
+            if (('AllowWrap' in entry) && entry['AllowWrap']) {
+            }
+            else {
+                entry['HTML'] = replaceSpaceWithNBSP(entry['HTML']);
+            }
+
+            if ((row === 0) && ( ! noheader)) {
+                result += '<th class="top" scope="col"'+entry['WidthSpec']+'>';
+            }
+            else {
+                result += '<td'+entry['WidthSpec']+entry['AlignSpec']+'>';
+            }
+
+            if ('Link' in entry) {
+                result += '<a href="'+entry['Link']+'">';
+            }
+            result += entry['HTML'];
+            if ('Link' in entry) {
+                result += '</a>';
+            }
+
+            if ((row === 0) && ( ! noheader)) {
+                result += '</th>';
+            }
+            else {
+                result += '</td>';
+            }
+        }
+        result += '</tr>';
+    }
+    result += '</table>';
+    return result;
+}
+
+var charsets = {
+    lowercase: 'abcdefghijklmnopqrstuvwxyz',
+    uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    digits: '0123456789',
+    hexupper: '0123456789ABCDEF',
+    hexlower: '0123456789abcdef',
+    hex: '0123456789ABCDEFabcdef'
+};
+
+function preparePoint(pt) {
+    if ( ! ('x' in pt)) {
+        pt['x'] = pt[0];
+        pt['y'] = pt[1];
+    }
+}
+
+function distancePtToPtSquared(pt1, pt2) {
+    preparePoint(pt1);
+    preparePoint(pt2);
+    var dx = pt1['x']-pt2['x'];
+    var dy = pt1['y']-pt2['y'];
+    return ((dx*dx)+(dy*dy));
+}
+
+function distancePtToPt(pt1, pt2) {
+    return Math.sqrt(distancePtToPtSquared(pt1,pt2));
+}
+
+function distancePtToLineSquared(pt, v, w) {
+    preparePoint(pt);
+    preparePoint(v);
+    preparePoint(w);
+    var l2 = distancePtToPtSquared(v, w);
+    if (l2 === 0) {
+        return distancePtToPtSquared(pt, v);
+    }
+    var t = ((pt['x'] - v['x']) * (w['x'] - v['x']) + (pt['y'] - v['y']) * (w['y'] - v['y'])) / l2;
+    if (t < 0) {
+        return distancePtToPtSquared(pt, v);
+    }
+    if (t > 1) {
+        return distancePtToPtSquared(pt, w);
+    }
+    return distancePtToPtSquared(pt, [
+        v['x'] + (t*(w['x']-v['x'])),
+        v['y'] + (t*(w['y']-v['y']))
+    ]);
+}
+
+function distancePtToLine(pt, lpt1, lpt2)
+{
+    return Math.sqrt(distancePtToLineSquared(pt, lpt1, lpt2));
+}
+
+function getMousePos(canvas, evt) {
+	var rect = canvas.getBoundingClientRect();
+	return {
+		x: evt.clientX - rect.left,
+		y: evt.clientY - rect.top
+	};
+}
+
+function removeAllListeners(existing) {
+    if (existing.parentNode !== null) {
+        var duplicate = existing.cloneNode(true);
+        existing.parentNode.replaceChild(duplicate, existing);
+        return duplicate;
+    }
+    else {
+        return null;
+    }
+}
+
+function clearCanvas(cv) {
+    var ctx = cv.getContext("2d");
+    ctx.clearRect(0, 0, cv.width, cv.height);
+}
+
+function objectValues(obj) {
+    var arr = [];
+    for (var k in obj) {
+        if (obj.hasOwnProperty(k)) {
+            arr.push(obj[k]);
+        }
+    }
+    return arr;
+}
+
+function chunkString(text, length) {
+    var b = [];
+    for(var i = length; i < text.length; i += length) {
+        b.push(text.slice(i-length, i));
+    }
+    b.push(text.slice(text.length - (length - text.length % length))); // last fragment
+    return b;
+}
+
+/* My maths functions */
+var Maths = {
+    log10: function(num) {
+        if (typeof(Math.log10) === "function") {
+            /* Sensible browsers */
+            return Math.log10(num);
+        }
+        else {
+            /* MS IE */
+            return (Math.log(num) / Math.log(10));
+        }
+    },
+
+    toRadians: function(v) {
+        return v * Math.PI / 180;
+    },
+
+    toDegrees: function(v) {
+        return v * 180.0 / Math.PI;
+    }
+};
+
+// vim: et

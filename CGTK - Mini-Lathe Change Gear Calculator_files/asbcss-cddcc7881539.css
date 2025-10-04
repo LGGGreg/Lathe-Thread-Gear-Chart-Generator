@@ -1,0 +1,1167 @@
+/* This CSS file is used to overwrite stuff from the template that I got from HTML5 UP.
+ * Although I liked the reponsiveness of the template, I didn't really like the colourscheme.
+ * Rather than editing it directly (and potentially breaking something I couldn't undo -
+ * I hate CSS - I decided it was better to add a separate CSS file that can overwrite
+ * specifics.  All being well, this should be loaded later and hence take precedence.
+ */
+
+/***********************************************************************************/
+
+.printonly {
+	display: none;
+}
+
+.nowrap {
+	white-space: nowrap;
+}
+
+/***********************************************************************************/
+
+span#contentscrollup {
+	position: fixed;
+	bottom: 10px;
+	right: 10px;
+	display: none;
+}
+
+span#sidebarscrollup {
+	display: block;
+}
+
+span#contentscrollup button.scrollupbtn {
+	text-transform: none;
+	background: white;
+}
+
+span#sidebarscrollup button.scrollupbtn {
+	text-transform: none;
+}
+
+/***********************************************************************************/
+
+/* Logo */
+
+#main .inner #header span.logo {
+	vertical-align: middle;
+}
+
+a.logoimga {
+	height: 58px; /* To match logo + margin */
+}
+
+span.logo img.logoimg {
+	margin-top: 4px;
+	margin-bottom: 4px;
+	margin-left: 2px;
+	margin-right: 8px;
+}
+
+div.logolinkarea {
+	display: flex;
+	vertical-align: middle;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+}
+
+#main .inner #header .logolinearea {
+	display: flex;
+	vertical-align: middle;
+	justify-content: space-between;
+	/* align-items: top; seems to be an error */
+	flex-wrap: nowrap;
+	flex-direction: row;
+}
+
+#main .inner #header .logolinearea .logofloatleft {
+	float: left;
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+	justify-content: space-between;
+	flex-wrap: nowrap;
+}
+
+#main .inner #header .logolinearea .spacer {
+	display: none;
+}
+
+#main .inner #header .logolinearea .logofloatright {
+	float: right;
+}
+
+#main .inner #header .logolinearea .taglinkarea a.logo span.sitename {
+	/* white-space: nowrap; */
+	display: inline-block;
+}
+
+#main .inner #header .logolinearea .taglinkarea a.logo span.sitetag {
+	display: inline-block;
+}
+
+/***********************************************************************************/
+
+/* Blog links - make the parent link be right aligned in line with the page number: */
+.blogparentlink {
+	float: right;
+}
+.blogpagenum {
+	clear: both;
+}
+
+div#bloglinkdiv {
+	overflow: hidden;
+}
+
+a.blogtoplink {
+	display: flex;
+	align-items: center;
+	border-bottom: none;
+}
+
+a.blogtoplink img.buildicon {
+	height: 2em;
+	margin-right: 0.5em;
+}
+
+.bloglink {
+	float: right;
+	margin-top; -2em;
+	margin-bottom: 1em;
+}
+
+ul.siblog {
+	padding-bottom: 0;
+	margin-bottom: 0;
+}
+
+ul.siTopLevelList li.siTopLevelListEntry {
+	padding-top: 1em;
+	padding-bottom: 1em;
+	border-top: solid 1px rgba(210, 215, 217, 0.75);
+}
+
+ul.siTopLevelList li.siTopLevelListEntry:first-child {
+	border-top: none;
+}
+
+ul.silist {
+	margin-bottom: 1em;
+}
+
+/***********************************************************************************/
+/* Centre youtube videos */
+
+iframe.youtubeiframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
+	border: none;
+}
+
+div.youtubeouter {
+	width: 100%;
+	/* min-width: 400px; */
+	max-width: 800px;
+
+	margin-left: auto;
+	margin-right: auto;
+	display: table;
+}
+
+div.youtubeouter div.youtubeinner {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+}
+
+/***********************************************************************************/
+
+dl dt {
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-left: 0;
+	margin-right: 0;
+}
+
+/***********************************************************************************/
+
+
+/* Tables */
+/* This doesn't seem to overwrite the main.css one properly! */
+table, tbody, thead, tr, th, td {
+	vertical-align: middle;
+}
+
+/***********************************************************************************/
+
+/* Don't use CSS to make things uppercase */
+header p {
+	text-transform: none; /* Overwrite uppercase text in headers */
+}
+
+.button {
+	text-transform: none;
+}
+
+#menu ul {
+	text-transform: none;
+}
+
+/***********************************************************************************/
+
+/* Blog navigation buttons: slightly less padding than default and always
+ * in the same place.
+ */
+a.blognavbtn {
+	padding: 0 0 0 0;
+	width: 95%;
+	text-transform: none;
+}
+.blognav {
+	width: 150px;
+	display: inline-block;
+}
+.blogpagelinks {
+	text-align: center;
+}
+
+@media screen and (max-width: 670px) {
+	.blognav {
+		width: 110px;
+		margin-bottom: 0.25em;
+	}
+}
+
+@media screen and (max-width: 512px) {
+	.blognavempty {
+		display: none;
+	}
+}
+
+/***********************************************************************************/
+
+/* Project page link on home page */
+
+span.projectpagelink {
+	display: block;
+	margin-bottom: 1em;
+	text-align: center;
+	font-size: 1.25em;
+}
+
+span.projectpagelinktext {
+	margin-left: 0.5em;
+	font-weight: bold;
+}
+
+/***********************************************************************************/
+
+/* Image container needs to be full width so they scale with the page */
+.image {
+	width: 100%;
+}
+
+.image a {
+	border-bottom: none;
+}
+
+/* Images are too big to show full size by default */
+.image img {
+	max-width: min(95%, 600px);
+	max-height: 400px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+img.imgfullwidth {
+	max-width: 100%;
+	width: 100%;
+	max-height: 100%;
+}
+
+/* imgtable stuff for multiple images in a row */
+.imgtable2 {
+	display: block;
+	/* max-height: 400px; */
+	margin-bottom: 1em;
+}
+
+.imgtable2 .image {
+	display: inline-block;
+	vertical-align: middle;
+	text-align: center;
+	width: 50%;
+}
+
+.imgtable2 .image img {
+	display: inline;
+}
+
+.imgtable3 {
+	display: block;
+	/* max-height: 400px; */
+	margin-bottom: 1em;
+}
+
+.imgtable3 .image {
+	display: inline-block;
+	vertical-align: middle;
+	text-align: center;
+	width: 33%;
+}
+
+.imgtable3 .image img {
+	display: inline;
+}
+
+.imgtable4 {
+	display: block;
+	/* max-height: 400px; */
+	margin-bottom: 1em;
+}
+
+.imgtable4 .image {
+	display: inline-block;
+	vertical-align: middle;
+	text-align: center;
+	width: 25%;
+}
+
+.imgtable4 .image img {
+	display: inline;
+}
+
+/* Intro images with titles */
+span.introimagetitle {
+	display: block;
+}
+
+/* Image grids with rowspan - needs lots of work */
+
+.imgtable22 {
+	display: flex;
+	justify-content: space-around;
+	max-height: 800px;
+}
+
+.imgmergedcol, .imgunmergedcol {
+	display: flex;
+	max-height: 100%;
+	width: 50%;
+	flex-direction: column;
+	align-items: stretch;
+}
+
+.imgtable22 .imgmergedcol .image {
+	display: flex;
+	max-width: 95%;
+	justify-content: center;
+	align-items: center;
+
+	max-height: 95%;
+	margin: 0;
+}
+.imgtable22 .imgunmergedcol .image {
+	display: flex;
+	max-width: 95%;
+	justify-content: center;
+	align-items: center;
+
+	max-height: 45%;
+	margin: 10px 0;
+}
+
+/***********************************************************************************/
+
+/* Dividing head calculator output */
+#main div.dividingHeadCalcOutput {
+	display: flex;
+	justify-content: space-around;
+}
+
+#main div.dividingHeadCalcOutput div.tablearea1 {
+	float: left;
+}
+
+#main div.dividingHeadCalcOutput div.tablearea2 {
+	float: right;
+}
+
+/***********************************************************************************/
+
+/* Body text for big screens seems a bit big in the template.
+ * This matches the font size for 1280 to 1680 px screens
+ */
+body, input, select, textarea {
+  font-size: 12pt;
+}
+
+/* h1 seems a bit excessive on the template */
+h1 {
+	font-size: 2.25em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin: 0 0 0.5em 0;
+}
+
+header.main > :last-child {
+	margin: 0 0 0.25em 0;
+}
+
+/***********************************************************************************/
+
+/* Gear Calculator intro */
+div#gearCalcIntroDiv {
+	width: 100%;
+	display: flex;
+}
+
+div#gearCalcIntroDiv span.gearCalcGearDiagram {
+	width: 30%;
+	float: left;
+	padding-right: 10px;
+}
+
+div#gearCalcIntroDiv span.gearCalcIntro {
+	width: 70%;
+	float: right;
+}
+
+canvas.gearCalcCanvas {
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+}
+
+/* Thread dial indicator drawing */
+div.floatright {
+	float: right;
+}
+
+/***********************************************************************************/
+
+/* Spacing reductions */
+
+p {
+	/* TODO: Consider reducing this further */
+	margin: 0 0 1.25em 0;
+}
+
+
+/***********************************************************************************/
+
+/* For some reason, the template makes checkboxes disappear! */
+input[type="checkbox"], input[type="radio"] {
+	/*
+	-moz-appearance: auto;
+	-webkit-appearance: auto;
+	-ms-appearance: auto;
+	appearance: auto;
+	*/
+	opacity: 1;
+	margin-right: 0;
+}
+
+input[type="checkbox"].modelViewerCheckbox {
+	vertical-align: middle;
+	margin-right: 0.5em;
+	float: none;
+	display: inline;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	-ms-appearance: none;
+	appearance: none;
+}
+
+table tbody tr td input[type="checkbox"]+label:before {
+	/* Try to get the checkbox centred in the table cell */
+	top: -0.2em;
+}
+
+/***********************************************************************************/
+
+/* Reduce the margin around the menu headers */
+header.major > :last-child {
+	margin-bottom: 0.5em;
+	margin-top: 1em;
+}
+
+/* Make the line between the main menu and the page menu be more visible */
+hr.menudivider {
+	border: 0;
+	border-bottom: solid 4px rgba(210, 215, 217, 0.75);
+	margin-top: 1em;
+	margin-bottom: 0;
+}
+
+/***********************************************************************************/
+
+/* Reduce padding above page title */
+#main > .inner {
+	padding-top: 0;
+}
+#main > .inner > section {
+	padding-top: 2em;
+}
+@media screen and (max-width: 1680px) {
+	#main > .inner {
+		padding-top: 0;
+	}
+	#main > .inner > section {
+		padding-top: 2em;
+	}
+}
+@media screen and (max-width: 1280px) {
+	#main > .inner {
+		padding-top: 0;
+	}
+	#main > .inner > section {
+		padding-top: 1em;
+	}
+}
+@media screen and (max-width: 736px) {
+	#main > .inner {
+		padding-top: 0;
+	}
+	#main > .inner > section {
+		padding-top: 1em;
+	}
+}
+
+/* ... and below */
+#main .inner #header {
+	padding-bottom: 0;
+	padding-top: 1em;
+}
+
+@media screen and (max-width: 736px) {
+	#main .inner #header {
+		padding-top: 5em;
+	}
+}
+
+/***********************************************************************************/
+
+/* Contact icon */
+
+.fa-envelope:before {
+	color: #4670a7;
+	margin-right: 0.5em;
+}
+
+/***********************************************************************************/
+
+/* Block quotes */
+
+blockquote {
+	padding: 0.25em 0 0.25em 1em;
+}
+
+blockquote p:last-child {
+	margin-bottom: 0;
+}
+
+
+/***********************************************************************************/
+
+/* Colours */
+
+/* Body text a bit darker */
+
+body, input, select, textarea {
+	color: #222426;
+}
+input[type="checkbox"] + label, input[type="radio"] + label {
+	color: #222426;
+}
+
+#search form:before {
+	color: #222426;
+}
+@media screen and (max-width: 736px) {
+	#sidebar .toggle:before {
+		color: #222426;
+	}
+}
+
+/* Link blue colour is #4670a7 aka rgba(70, 112, 167 */
+
+/* This section was created by extracting all the references to:
+ * #f56a6a -> #4670a7 (this is the main link colour and also used for various other things)
+ * #f45c5c (
+ * #f67878
+ * rgba(\s*245,\s*106,\s*106 -> rgba(70, 112, 167
+ * from the template css and duplicating the relevant bits but with a different colour.
+ */
+
+a {
+	color: #4670a7;
+}
+
+a:hover {
+	border-bottom-color: #4670a7;
+	color: #4670a7 !important;
+}
+
+#header {
+	border-bottom: solid 5px #4670a7;
+}
+header.major > :last-child {
+	border-bottom: solid 3px #4670a7;
+}
+
+#menu ul a:hover, #menu ul span:hover {
+color: #4670a7; }
+#menu ul a.opener:hover:before, #menu ul span.opener:hover:before {
+color: #4670a7; }
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+input[type="search"]:focus,
+input[type="url"]:focus,
+select:focus,
+textarea:focus {
+	border-color: #4670a7;
+	box-shadow: 0 0 0 1px #4670a7;
+}
+input[type="checkbox"]:focus + label:before,
+input[type="radio"]:focus + label:before {
+	border-color: #4670a7;
+	box-shadow: 0 0 0 1px #4670a7;
+}
+ul.contact li:before {
+	color: #4670a7;
+}
+ul.pagination li > .page.active {
+	background-color: #4670a7;
+}
+
+input[type="submit"],
+input[type="reset"],
+input[type="button"],
+button,
+.button {
+	box-shadow: inset 0 0 0 2px #4670a7;
+	color: #4670a7 !important;
+}
+
+input[type="submit"].primary,
+input[type="reset"].primary,
+input[type="button"].primary,
+button.primary,
+.button.primary {
+	background-color: #4670a7;
+}
+
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+input[type="button"]:hover,
+button:hover,
+.button:hover {
+	background-color: rgba(70, 112, 167, 0.05);
+}
+input[type="submit"]:active,
+input[type="reset"]:active,
+input[type="button"]:active,
+button:active,
+.button:active {
+	background-color: rgba(70, 112, 167, 0.15);
+}
+
+.features article .icon:before {
+	color: #4670a7;
+}
+
+
+/* I'm not sure where these ones are used but I don't want that red colour popping up anywhere,
+ * so I'm just setting them to the same colour as the other blue things.
+ */
+input[type="submit"].primary:active,
+input[type="reset"].primary:active,
+input[type="button"].primary:active,
+button.primary:active,
+.button.primary:active {
+	background-color: #4670a7; /* was #f45c5c; */
+}
+ul.pagination li > .page.active:active {
+	background-color: #4670a7; /* was #f45c5c; */
+}
+ul.pagination li > .page.active:hover {
+	background-color: #4670a7; /* was #f67878; */
+}
+
+#menu > ul > li > ul {
+	color: #3d4449;
+}
+
+/***********************************************************************************/
+
+/* Footer */
+#footer .copyright {
+  color: #6d7174;
+  }
+
+div#pagecopyright {
+	float: right;
+	font-size: 0.9em;
+}
+
+/***********************************************************************************/
+
+/* Form stuff */
+
+span.contactformmsg {
+	color: #4670a7;
+	display: block;
+	vertical-align: middle;
+	text-align: center;
+}
+
+span.contactformwarning {
+	color: red;
+}
+
+span#cfUserName {
+	position: absolute;
+	left: -98989874px;
+}
+
+span.cfField {
+	display: block;
+}
+
+
+/***********************************************************************************/
+
+/* OpenJSCAD Stuff */
+
+div#parametersdiv div.parameterheader {
+	font-size: 1.25em;
+	color: #3d4449;
+	font-family: "Roboto Slab", serif;
+	font-weight: 700;
+	line-height: 1.5;
+	margin: 1em 0 1em 0;
+}
+
+div#parametersdiv button {
+	display: block;
+}
+
+div#parametersdiv input#instantUpdate {
+	float: none;
+	display: inline-block;
+	margin-right: 0.5em;
+}
+
+div#plea {
+	clear: both;
+	padding-top: 1px;
+}
+
+div#donatearea {
+	display: flex;
+	align-items: center;
+	margin-bottom: 45px; /* For scroll to top button */
+}
+
+div#donatebtn {
+	margin-right: 1em;
+}
+
+div#donatearea div#donatebtn a.paypalbutton {
+	padding-left: 10px;
+	padding-right: 10px;
+	font-size: 1em;
+	display: inline-flex;
+	align-items: center;
+	letter-spacing: normal;
+}
+
+@media screen and (max-width: 480px) {
+	div#donatearea div#donatebtn a.paypalbutton {
+		text-align: left;
+		padding-right: 0;
+		margin-right: 0;
+		line-height: 1.2em;
+		white-space: unset;
+		width: 7.5em;
+	}
+}
+
+div#donatearea div#donatebtn a.paypalbutton:before {
+	font-size: 2.5em;
+	margin-right: 0.25em;
+}
+
+div#donatetext {
+	width: calc(100% - 106px);
+}
+
+div#donatetext p {
+	margin-bottom: 0;
+}
+
+form#paypaldonatebtn {
+	margin-bottom: 0;
+	line-height: 1px;
+	width: 94px;
+}
+
+/***********************************************************************************/
+
+/* three.js stuff */
+
+div.model3d {
+	width: 100%;
+	height: 100%;
+	aspect-ratio: 16 / 9;
+}
+
+div.model3douter {
+	width: 100%;
+	/* min-width: 400px; */
+	max-width: 800px;
+	aspect-ratio: 16 / 9;
+
+	margin-left: auto;
+	margin-right: auto;
+	display: table;
+}
+
+/***********************************************************************************/
+
+/* Unit Converter Stuff */
+
+input#convertfrom {
+	display: inline;
+	width: auto;
+}
+
+
+div.unitConvertTables {
+	display: block;
+	margin-bottom: 1em;
+}
+
+div.unitConverterLeftColumn {
+	display: inline-block;
+	vertical-align: middle;
+	text-align: center;
+	width: 49%;
+	min-width: 275px;
+}
+div.unitConverterRightColumn {
+	display: inline-block;
+	vertical-align: middle;
+	text-align: center;
+	width: 49%;
+	min-width: 300px;
+}
+
+/***********************************************************************************/
+
+/* Overview page stuff */
+
+span.overviewpubdate {
+	text-align: right;
+	display: block;
+	margin-bottom: 0;
+	font-size: 0.9em;
+	margin-top: -1em;
+}
+
+span.overviewpagein {
+	display: block;
+	text-align: right;
+	font-size: 0.9em;
+	margin-bottom: 1em;
+}
+
+/* With big screens, we use a bigger base font so need to make
+ * this even smaller as a proportion.
+ */
+@media screen and (min-width: 1681px) {
+	span.overviewpagein {
+		font-size: 0.8em;
+	}
+	span.overviewpubdate {
+		font-size: 0.8em;
+	}
+}
+
+img.hasblogicon {
+	height: 1.25em; /* To match <h3> - see main.css line 153 */
+	float: right;
+}
+
+span.overviewinlink {
+	display: inline-block;
+}
+
+p.overviewdescription {
+	margin-bottom: 1em;
+}
+
+div#postfilter {
+	margin-bottom: 1em;
+}
+
+div#catselector {
+	width: auto;
+	display: block;
+	margin-bottom: 0.5em;
+}
+
+button.filterbtn {
+	text-transform: none;
+	padding: 0 1em;
+	margin: 5px;
+}
+
+p.overviewdescription:first-letter {
+	text-transform: uppercase;
+}
+
+.projects article ul.actions {
+	margin-bottom: 0.5em;
+
+}
+
+.projects article h3 {
+	margin-top: 0.5em;
+}
+
+.projects {
+	margin-left: 0;
+	display: -moz-flex;
+	display: -webkit-flex;
+	display: -ms-flex;
+	display: flex;
+	-moz-flex-wrap: wrap;
+	-webkit-flex-wrap: wrap;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
+	/* margin: 0 0 2em -6em; */
+	width: 100%
+}
+
+.projects article {
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+	margin-bottom: 0.5em;
+
+    -moz-flex-grow: 0;
+    -webkit-flex-grow: 0;
+    -ms-flex-grow: 0;
+    flex-grow: 0;
+    -moz-flex-shrink: 1;
+    -webkit-flex-shrink: 1;
+    -ms-flex-shrink: 1;
+    flex-shrink: 1;
+    /*margin: 0 0 6em 6em; */
+    position: relative;
+}
+
+.projects article .image img {
+	/* display: block; */
+	/* width: auto; */
+}
+
+.projects article .articleimagebox {
+	position: relative;
+	width: 100%;
+	padding-bottom: 80%; /* This sets the aspect ratio for maximum image size */
+	/* display: flex; */
+	/* justify-content: center; */
+}
+
+.projects article .articleinnerbox {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+.projects article .articleimagebox .articleinnerbox a {
+	width: 100%;
+	height: 100%;
+}
+
+.projects article .articleimagebox .articleinnerbox a img.articleimage {
+	position: absolute;
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: scale-down;
+	width: 100%;
+}
+
+.projects article:before {
+	background: rgba(210, 215, 217, 0.75);
+	content: '';
+	display: none;
+	height: calc(100% + 6em);
+	left: -0.5em;
+	position: absolute;
+	top: 0;
+	width: 1px;
+}
+
+.projects article:after {
+	background: rgba(210, 215, 217, 0.75);
+	bottom: 0;
+	content: '';
+	display: block;
+	height: 1px;
+	position: absolute;
+	right: 0;
+	width: calc(100% + 1em);
+}
+
+@media screen and (min-width: 1681px) {
+	.projects article {
+		width: calc(25% - 1em);
+	}
+	.projects article:nth-child(4n+2 of .visible):before, .projects article:nth-child(4n+3 of .visible):before, .projects article:nth-child(4n+4 of .visible):before {
+		display: block;
+	}
+	.projects article:nth-last-child(1 of .visible):after, .projects article:nth-last-child(2 of .visible):after, .projects article:nth-last-child(3 of .visible):after, .projects article:nth-last-child(4 of .visible):after {
+		display: none
+	}
+
+	.projects article:nth-child(4n + 1 of .visible):after {
+		width: calc(100% + 1em);
+		left: -0.5em;
+	}
+	.projects article:nth-child(4n + 2 of .visible):after {
+		width: calc(100% + 1em);
+		left: -0.5em;
+	}
+	.projects article:nth-child(4n + 3 of .visible):after {
+		width: calc(100% + 1em);
+		left: -0.5em;
+	}
+	.projects article:nth-child(4n + 4 of .visible):after {
+		width: calc(100% + 1em);
+		left: -0.5em;
+	}
+	.projects article:nth-last-child(1), .projects article:nth-last-child(2), .projects article:nth-last-child(3), .projects article:nth-last-child(4) {
+		margin-bottom: 4em;
+	}
+	.projects article:nth-last-child(1 of .visible):before, .projects article:nth-last-child(2 of .visible):before, .projects article:nth-last-child(3 of .visible):before, .projects article:nth-last-child(4 of .visible):before  {
+		height: 100%;
+	}
+}
+@media screen and (min-width: 737px) and (max-width: 1680px) {
+	.projects article {
+		width: calc(33.3333% - 1em);
+	}
+	.projects article:nth-child(3n+2 of .visible):before, .projects article:nth-child(3n+3 of .visible):before {
+		display: block;
+	}
+	.projects article:nth-last-child(1 of .visible):after, .projects article:nth-last-child(2 of .visible):after, .projects article:nth-last-child(3 of .visible):after {
+		display: none
+	}
+
+	.projects article:nth-child(3n + 1 of .visible):after {
+		width: calc(100% + 1em);
+		left: -0.5em;
+	}
+	.projects article:nth-child(3n + 2 of .visible):after {
+		width: calc(100% + 1em);
+		left: -0.5em;
+	}
+	.projects article:nth-child(3n + 3 of .visible):after {
+		width: calc(100% + 1em);
+		left: -0.5em;
+	}
+	.projects article:nth-last-child(1), .projects article:nth-last-child(2), .projects article:nth-last-child(3) {
+		margin-bottom: 4em;
+	}
+	.projects article:nth-last-child(1 of .visible):before, .projects article:nth-last-child(2 of .visible):before, .projects article:nth-last-child(3 of .visible):before {
+		height: 100%;
+	}
+}
+@media screen and (min-width: 481px) and (max-width: 736px) {
+	.projects {
+		/* margin: 0 0 1em -4.5em; */
+		width: calc(100% + 1em);
+	}
+	.projects article {
+		/* margin: 0 0 1em 4.5em; */
+		width: calc(50% - 5.5em);
+	}
+
+	.projects article:nth-child(2n+2 of .visible):before {
+		display: block;
+	}
+	.projects article:nth-last-child(1 of .visible):after, .projects article:nth-last-child(2 of .visible):after {
+		display: none
+	}
+
+	.projects article:nth-child(2n + 1 of .visible):after {
+		width: calc(100% + 1em);
+		left: -0.5em;
+	}
+	.projects article:nth-child(2n + 2 of .visible):after {
+		width: calc(100% + 1em);
+		left: -0.5em;
+	}
+	.projects article:nth-last-child(1 of .visible), .projects article:nth-last-child(2 of .visible) {
+		margin-bottom: 4em;
+	}
+	.projects article:nth-last-child(1 of .visible):before, .projects article:nth-last-child(2 of .visible):before {
+		height: 100%;
+	}
+	/*
+	.projects article:before {
+		height: calc(100% + 4.5em);
+		left: -2.25em;
+	}
+	.projects article:after {
+		bottom: -2.25em;
+		width: calc(100% + 4.5em);
+	}
+	.projects article:nth-last-child(3) {
+		margin-bottom: 4.5em;
+	}
+	*/
+}
+@media screen and (max-width: 480px) {
+	.projects {
+		margin: 0 0 1em 0;
+		width: 100%;
+	}
+	.projects article {
+		margin: 0 0 2em 0;
+		width: 100%;
+	}
+	.projects article:after {
+		width: 100%;
+		display: block;
+	}
+	.projects article:nth-last-child(1 of .visible):after {
+		display: none;
+		margin-bottom: 2em;
+	}
+
+	.projects article div.articleimagebox {
+		position: unset;
+		padding-bottom: 0;
+	}
+	.projects article div.articleimagebox div.articleinnerbox {
+		position: unset;
+	}
+	.projects article div.articleimagebox div.articleinnerbox a.image {
+	}
+	.projects article div.articleimagebox div.articleinnerbox a.image img.articleimage {
+		max-height: 300px;
+		position: unset;
+	}
+}
