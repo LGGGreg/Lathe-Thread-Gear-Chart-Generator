@@ -1,6 +1,15 @@
 # Mini-Lathe Change Gear Calculator
 
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-success)](https://lgggreg.github.io/Lathe-Thread-Gear-Chart-Generator/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A modernized, offline-capable web calculator for determining change gear combinations on 7x12 mini-lathes (like the Sieg SC2).
+
+## 🌐 Live Demo
+
+**Try it now:** [https://lgggreg.github.io/Lathe-Thread-Gear-Chart-Generator/](https://lgggreg.github.io/Lathe-Thread-Gear-Chart-Generator/)
+
+No installation needed - just click and use!
 
 ## 🎯 Features
 
@@ -10,16 +19,32 @@ A modernized, offline-capable web calculator for determining change gear combina
 - **Mobile-Friendly**: Optimized for phones, tablets, and desktops
 - **Dual Mode**: Supports both metric (mm pitch) and imperial (TPI) calculations
 - **Flexible Input**: Handles both 1.5mm pitch and 16 TPI leadscrews
+- **Smart Optimization**: Intelligently minimizes gear changes across threading charts
+- **Threading Chart Generator**: Create comprehensive reference charts for your workshop
+- **CSV Export**: Export charts for printing or spreadsheet use
+- **Persistent Settings**: Saves your gear collection and preferences
 
 ## 🚀 Quick Start
 
-1. Open `index.html` in any modern web browser
-2. Enter your available gear tooth counts (comma-separated)
-3. Select your leadscrew type and target thread specification
-4. Click "Calculate Gear Combinations"
-5. View all possible gear arrangements
+### Online (Easiest)
 
-That's it! No installation, no internet required.
+Just visit: **[https://lgggreg.github.io/Lathe-Thread-Gear-Chart-Generator/](https://lgggreg.github.io/Lathe-Thread-Gear-Chart-Generator/)**
+
+### Offline
+
+1. Download or clone this repository
+2. Open `index.html` in any modern web browser
+3. Works completely offline - no internet required!
+
+### Using the Calculator
+
+1. Enter your available gear tooth counts (comma-separated)
+2. Select your leadscrew type (metric 1.5mm or imperial 16 TPI)
+3. Choose single thread calculation or generate a full threading chart
+4. View optimized gear combinations
+5. Export charts as CSV for your workshop
+
+That's it! No installation, no server, no dependencies.
 
 ## 📁 File Structure
 
@@ -130,6 +155,21 @@ Works in all modern browsers:
 - ✅ Mobile browsers (iOS Safari, Chrome Mobile)
 
 **No Internet Explorer support** (it's 2025, time to upgrade!)
+
+## 🚀 Deployment
+
+This calculator is hosted on **GitHub Pages** and automatically deploys when you push to the `main` branch.
+
+**Live URL:** [https://lgggreg.github.io/Lathe-Thread-Gear-Chart-Generator/](https://lgggreg.github.io/Lathe-Thread-Gear-Chart-Generator/)
+
+### How It Works
+
+1. Push changes to `main` branch
+2. GitHub automatically builds and deploys
+3. Site updates in 1-2 minutes
+4. No server configuration needed!
+
+See [GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md) for detailed setup instructions.
 
 ## 🤝 Credits
 
