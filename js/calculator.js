@@ -272,23 +272,28 @@ class GearCalculator {
         const table = document.createElement("table");
         table.classList.add("asbTable", "tightHeight");
 
-        // Create header
+        // Create header with color-coded gear columns
         const headerRow = table.insertRow(0);
-        ['Gear A', 'Gear B', 'Gear C', 'Gear D', isImperial ? 'Actual TPI' : 'Actual Pitch (mm)', 'Error %'].forEach(text => {
+        const headers = ['Gear A', 'Gear B', 'Gear C', 'Gear D', isImperial ? 'Actual TPI' : 'Actual Pitch (mm)', 'Error %'];
+        const gearClasses = ['gear-a-header', 'gear-b-header', 'gear-c-header', 'gear-d-header', '', ''];
+
+        headers.forEach((text, index) => {
             const th = document.createElement('th');
             th.innerHTML = `<b>${text}</b>`;
-            th.className = 'border';
+            th.className = 'border ' + (gearClasses[index] || '');
             headerRow.appendChild(th);
         });
 
-        // Add data rows
+        // Add data rows with gear cell classes
+        const gearCellClasses = ['gear-a-cell', 'gear-b-cell', 'gear-c-cell', 'gear-d-cell'];
+
         solutions.forEach((solution, index) => {
             const row = table.insertRow(index + 1);
             const gears = solution.Gears;
 
             gears.forEach((gear, gearIndex) => {
                 const cell = row.insertCell(gearIndex);
-                cell.className = 'border';
+                cell.className = 'border ' + gearCellClasses[gearIndex];
                 if (gear === null && gearIndex === 1) {
                     cell.innerHTML = "ANY";
                 } else if (gear === null) {
@@ -676,10 +681,10 @@ function displayThreadChart(chartData) {
     html += '<table class="asbTable tightHeight">';
     html += '<thead><tr>';
     html += '<th class="border"><b>Target</b></th>';
-    html += '<th class="border"><b>Gear A</b></th>';
-    html += '<th class="border"><b>Gear B</b></th>';
-    html += '<th class="border"><b>Gear C</b></th>';
-    html += '<th class="border"><b>Gear D</b></th>';
+    html += '<th class="border gear-a-header"><b>Gear A</b></th>';
+    html += '<th class="border gear-b-header"><b>Gear B</b></th>';
+    html += '<th class="border gear-c-header"><b>Gear C</b></th>';
+    html += '<th class="border gear-d-header"><b>Gear D</b></th>';
     html += '<th class="border"><b>Actual</b></th>';
     html += '<th class="border"><b>Error %</b></th>';
     html += '</tr></thead>';
@@ -694,10 +699,10 @@ function displayThreadChart(chartData) {
         } else {
             html += '<tr>';
             html += `<td class="border">${row.target}</td>`;
-            html += `<td class="border">${row.gearA}</td>`;
-            html += `<td class="border">${row.gearB}</td>`;
-            html += `<td class="border">${row.gearC}</td>`;
-            html += `<td class="border">${row.gearD}</td>`;
+            html += `<td class="border gear-a-cell">${row.gearA}</td>`;
+            html += `<td class="border gear-b-cell">${row.gearB}</td>`;
+            html += `<td class="border gear-c-cell">${row.gearC}</td>`;
+            html += `<td class="border gear-d-cell">${row.gearD}</td>`;
             html += `<td class="border">${row.actual}</td>`;
             html += `<td class="border">${row.error}</td>`;
             html += '</tr>';
@@ -739,3 +744,143 @@ function exportChartToCSV() {
     link.click();
     document.body.removeChild(link);
 }
+
+// ========================================
+// Gear Hover Interaction System
+// ========================================
+
+/**
+ * Initialize hover interactions between SVG gears and table columns
+ */
+function initializeGearHoverEffects() {
+    const svgObject = document.getElementById('gears-svg');
+
+    if (!svgObject) return;
+
+    // Wait for SVG to load
+    svgObject.addEventListener('load', function() {
+        const svgDoc = svgObject.contentDocument;
+        if (!svgDoc) return;
+
+        // Get gear paths from SVG (labels are " GearA", "GearB", "GearC", "GearD")
+        const gearPaths = {
+            'A': svgDoc.querySelector('[inkscape\\:label=" GearA"]') || svgDoc.querySelector('[inkscape\\:label="GearA"]'),
+            'B': svgDoc.querySelector('[inkscape\\:label="GearB"]'),
+            'C': svgDoc.querySelector('[inkscape\\:label="GearC"]'),
+            'D': svgDoc.querySelector('[inkscape\\:label="GearD"]')
+        };
+
+        // Setup hover handlers for SVG paths
+        Object.keys(gearPaths).forEach(gearLetter => {
+            const path = gearPaths[gearLetter];
+            if (!path) return;
+
+            path.style.cursor = 'pointer';
+            path.style.transition = 'all 0.2s ease';
+
+            // Hover on SVG path -> highlight table column
+            path.addEventListener('mouseenter', () => highlightGear(gearLetter, true));
+            path.addEventListener('mouseleave', () => highlightGear(gearLetter, false));
+        });
+
+        // Setup hover handlers for table cells
+        setupTableHoverHandlers(gearPaths);
+    });
+}
+
+/**
+ * Setup hover handlers for table cells to highlight SVG
+ */
+function setupTableHoverHandlers(gearPaths) {
+    const gearLetters = ['A', 'B', 'C', 'D'];
+
+    gearLetters.forEach(letter => {
+        const cellClass = `gear-${letter.toLowerCase()}-cell`;
+        const cells = document.querySelectorAll(`.${cellClass}`);
+
+        cells.forEach(cell => {
+            cell.addEventListener('mouseenter', () => {
+                highlightGear(letter, true);
+            });
+
+            cell.addEventListener('mouseleave', () => {
+                highlightGear(letter, false);
+            });
+        });
+    });
+}
+
+/**
+ * Highlight or unhighlight a specific gear
+ * @param {string} gearLetter - 'A', 'B', 'C', or 'D'
+ * @param {boolean} highlight - true to highlight, false to unhighlight
+ */
+function highlightGear(gearLetter, highlight) {
+    const cellClass = `gear-${gearLetter.toLowerCase()}-cell`;
+    const cells = document.querySelectorAll(`.${cellClass}`);
+
+    // Highlight table cells
+    cells.forEach(cell => {
+        if (highlight) {
+            cell.classList.add('highlighted');
+        } else {
+            cell.classList.remove('highlighted');
+        }
+    });
+
+    // Highlight SVG path
+    const svgObject = document.getElementById('gears-svg');
+    if (svgObject && svgObject.contentDocument) {
+        const svgDoc = svgObject.contentDocument;
+        const path = svgDoc.querySelector(`[inkscape\\:label=" Gear${gearLetter}"]`) ||
+                     svgDoc.querySelector(`[inkscape\\:label="Gear${gearLetter}"]`);
+
+        if (path) {
+            if (highlight) {
+                path.classList.add('gear-path-highlighted');
+                // Store original opacity
+                if (!path.dataset.originalOpacity) {
+                    path.dataset.originalOpacity = path.style.opacity || '0.55';
+                }
+                path.style.opacity = '1';
+            } else {
+                path.classList.remove('gear-path-highlighted');
+                // Restore original opacity
+                if (path.dataset.originalOpacity) {
+                    path.style.opacity = path.dataset.originalOpacity;
+                }
+            }
+        }
+    }
+}
+
+// Initialize hover effects when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    initializeGearHoverEffects();
+
+    // Re-initialize after table updates (for dynamically generated tables)
+    const observer = new MutationObserver(() => {
+        const svgObject = document.getElementById('gears-svg');
+        if (svgObject && svgObject.contentDocument) {
+            const gearPaths = {
+                'A': svgObject.contentDocument.querySelector('[inkscape\\:label=" GearA"]') ||
+                     svgObject.contentDocument.querySelector('[inkscape\\:label="GearA"]'),
+                'B': svgObject.contentDocument.querySelector('[inkscape\\:label="GearB"]'),
+                'C': svgObject.contentDocument.querySelector('[inkscape\\:label="GearC"]'),
+                'D': svgObject.contentDocument.querySelector('[inkscape\\:label="GearD"]')
+            };
+            setupTableHoverHandlers(gearPaths);
+        }
+    });
+
+    // Observe changes to result containers
+    const resultsDiv = document.getElementById('results');
+    const chartResultsDiv = document.getElementById('chart-results');
+
+    if (resultsDiv) {
+        observer.observe(resultsDiv, { childList: true, subtree: true });
+    }
+    if (chartResultsDiv) {
+        observer.observe(chartResultsDiv, { childList: true, subtree: true });
+    }
+});
