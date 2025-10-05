@@ -753,20 +753,14 @@ function exportChartToCSV() {
  * Initialize hover interactions between SVG gears and table columns
  */
 function initializeGearHoverEffects() {
-    console.log('[INIT] Starting gear hover effects initialization');
-
     // Since SVG is now inline, we can access it directly
     const svg = document.getElementById('gears-svg');
 
-    console.log('[INIT] SVG element found:', svg);
-
     if (!svg) {
-        console.error('[INIT] SVG element not found!');
         return;
     }
 
     // Get gear paths from SVG by ID (directly, no contentDocument needed)
-    console.log('[INIT] Attempting to find gear paths by ID...');
     const gearPaths = {
         'A': document.getElementById('GearA'),
         'B': document.getElementById('GearB'),
@@ -774,38 +768,25 @@ function initializeGearHoverEffects() {
         'D': document.getElementById('GearD')
     };
 
-    console.log('[INIT] Gear paths found:', gearPaths);
-    console.log('[INIT] GearA:', gearPaths['A']);
-    console.log('[INIT] GearB:', gearPaths['B']);
-    console.log('[INIT] GearC:', gearPaths['C']);
-    console.log('[INIT] GearD:', gearPaths['D']);
-
     // Setup hover handlers for SVG paths
     Object.keys(gearPaths).forEach(gearLetter => {
         const path = gearPaths[gearLetter];
-        if (!path) {
-            console.warn(`[SETUP] Gear ${gearLetter} path not found!`);
-            return;
-        }
+        if (!path) return;
 
-        console.log(`[SETUP] Setting up hover for Gear ${gearLetter}`);
         path.style.cursor = 'pointer';
         path.style.transition = 'opacity 0.2s ease';
 
         // Hover on SVG path -> highlight table column
         path.addEventListener('mouseenter', () => {
-            console.log(`[HOVER] Mouse entered Gear ${gearLetter} in SVG`);
             highlightGear(gearLetter, true);
         });
         path.addEventListener('mouseleave', () => {
-            console.log(`[HOVER] Mouse left Gear ${gearLetter} in SVG`);
             highlightGear(gearLetter, false);
         });
     });
 
     // Setup hover handlers for table cells
     setupTableHoverHandlers(gearPaths);
-    console.log('[INIT] Initialization complete');
 }
 
 /**
@@ -814,28 +795,20 @@ function initializeGearHoverEffects() {
 function setupTableHoverHandlers(gearPaths) {
     const gearLetters = ['A', 'B', 'C', 'D'];
 
-    console.log('[TABLE] Setting up table hover handlers...');
-
     gearLetters.forEach(letter => {
         const cellClass = `gear-${letter.toLowerCase()}-cell`;
         const cells = document.querySelectorAll(`.${cellClass}`);
 
-        console.log(`[TABLE] Found ${cells.length} cells for Gear ${letter} with class ${cellClass}`);
-
         cells.forEach(cell => {
             cell.addEventListener('mouseenter', () => {
-                console.log(`[TABLE] Mouse entered cell for Gear ${letter}`);
                 highlightGear(letter, true);
             });
 
             cell.addEventListener('mouseleave', () => {
-                console.log(`[TABLE] Mouse left cell for Gear ${letter}`);
                 highlightGear(letter, false);
             });
         });
     });
-
-    console.log('[TABLE] Table hover handlers setup complete');
 }
 
 /**
@@ -844,41 +817,29 @@ function setupTableHoverHandlers(gearPaths) {
  * @param {boolean} highlight - true to highlight, false to unhighlight
  */
 function highlightGear(gearLetter, highlight) {
-    console.log(`[HIGHLIGHT] Called for Gear ${gearLetter}, highlight=${highlight}`);
-
     const cellClass = `gear-${gearLetter.toLowerCase()}-cell`;
     const cells = document.querySelectorAll(`.${cellClass}`);
-
-    console.log(`[HIGHLIGHT] Found ${cells.length} cells with class ${cellClass}`);
 
     // Highlight table cells
     cells.forEach(cell => {
         if (highlight) {
             cell.classList.add('highlighted');
-            console.log(`[HIGHLIGHT] Added 'highlighted' class to cell`);
         } else {
             cell.classList.remove('highlighted');
-            console.log(`[HIGHLIGHT] Removed 'highlighted' class from cell`);
         }
     });
 
     // Highlight SVG path (directly, since SVG is inline)
     const path = document.getElementById(`Gear${gearLetter}`);
-    console.log(`[HIGHLIGHT] Looking for path with ID: Gear${gearLetter}`);
-    console.log(`[HIGHLIGHT] Path found:`, path);
 
     if (path) {
         if (highlight) {
             // Change opacity from 0.55 to 1 to make it bold/visible
             path.style.opacity = '1';
-            console.log(`[HIGHLIGHT] Set opacity to 1 for Gear ${gearLetter}`);
         } else {
             // Restore original opacity
             path.style.opacity = '0.55';
-            console.log(`[HIGHLIGHT] Restored opacity to 0.55 for Gear ${gearLetter}`);
         }
-    } else {
-        console.error(`[HIGHLIGHT] Path not found for Gear${gearLetter}!`);
     }
 }
 
@@ -888,8 +849,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Re-initialize after table updates (for dynamically generated tables)
     const observer = new MutationObserver(() => {
-        console.log('[OBSERVER] Table mutation detected, re-attaching hover handlers...');
-
         // Since SVG is inline, we can access gear paths directly
         const gearPaths = {
             'A': document.getElementById('GearA'),
@@ -906,11 +865,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const chartResultsDiv = document.getElementById('chart-results');
 
     if (resultsDiv) {
-        console.log('[OBSERVER] Observing results div for changes');
         observer.observe(resultsDiv, { childList: true, subtree: true });
     }
     if (chartResultsDiv) {
-        console.log('[OBSERVER] Observing chart-results div for changes');
         observer.observe(chartResultsDiv, { childList: true, subtree: true });
     }
+
+    // Auto-generate the threading chart on page load
+    calculateThreadingChart();
 });
