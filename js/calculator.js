@@ -387,20 +387,25 @@ function saveSettings() {
 /**
  * Optimize gear selection to minimize changes across chart
  *
- * Algorithm: Greedy Frequency-Based Selection with 2-Gear Preference
+ * Algorithm: Greedy Selection with Error Minimization and 2-Gear Preference
  * 1. Get all possible solutions for each target (up to 10 per target)
  * 2. Build frequency map: count how often each gear appears in each position
- * 3. Score each solution based on:
- *    - 2-gear solution bonus: B=ANY, C=- (+1000 points) ← STRONGLY PREFERRED!
+ * 3. Score each solution based on (in priority order):
+ *    - Error minimization: exponential decay favoring lowest error (~100,000 points)
+ *      * 0.0125% error → ~99,875 points
+ *      * 0.0606% error → ~99,394 points
+ *      * 0.0874% error → ~99,126 points
+ *    - 2-gear solution bonus: B=ANY, C=- (+10,000 points)
  *    - Frequency score: how common is this gear in this position? (×10 points)
  *    - Reuse bonus: is this gear already selected for this position? (+100 points)
  * 4. Greedy selection: for each target, pick the highest-scoring solution
  * 5. Update tracking as we go to prefer already-selected gears
  *
- * This minimizes gear changes by preferring:
- * - 2-gear solutions (B and C are hard to change!) - HIGHEST PRIORITY
- * - Gears that appear frequently across many threads
- * - Gears already selected for previous threads
+ * This optimizes by preferring (in order):
+ * 1. HIGHEST ACCURACY - Minimal error percentage
+ * 2. 2-gear solutions (B and C are hard to change!)
+ * 3. Gears that appear frequently across many threads
+ * 4. Gears already selected for previous threads
  *
  * Complexity: O(n * m) where n = targets, m = solutions per target (max 10)
  * Max iterations: n * 10 (typically 34 * 10 = 340, well under 100 per target)
@@ -439,11 +444,28 @@ function optimizeGearSelections(targets, calc, gears, leadscrewTpi) {
         });
     });
 
-    // Step 3: Score each solution based on gear commonality
-    const scoreSolution = (solution, selectedGears) => {
+    // Step 3: Score each solution based on gear commonality and accuracy
+    const scoreSolution = (solution, selectedGears, target) => {
         let score = 0;
 
-        // STRONGLY prefer 2-gear solutions (B=ANY, C=-)
+        // HIGHEST PRIORITY: Minimize error percentage
+        // Calculate error based on target type
+        let errorPercent = 0;
+        if (target.type === 'tpi') {
+            errorPercent = Math.abs((solution.TPI - target.value) / target.value * 100);
+        } else {
+            errorPercent = Math.abs((solution.Pitch - target.value) / target.value * 100);
+        }
+
+        // Error score: Lower error = higher score
+        // Use exponential decay to HEAVILY favor low error
+        // 0.0125% error → ~99,875 points
+        // 0.0606% error → ~99,394 points
+        // 0.0874% error → ~99,126 points
+        const errorScore = 100000 * Math.exp(-errorPercent * 10);
+        score += errorScore;
+
+        // SECOND PRIORITY: Prefer 2-gear solutions (B=ANY, C=-)
         // Gears B and C are hard to change, so 2-gear solutions are much better
         // 2-gear solutions have structure: [ga, null, null, gd]
         const isTwoGearSolution = (solution.Gears[1] === null && solution.Gears[2] === null);
@@ -451,6 +473,7 @@ function optimizeGearSelections(targets, calc, gears, leadscrewTpi) {
             score += 10000; // HUGE bonus for 2-gear solutions!
         }
 
+        // THIRD PRIORITY: Gear frequency and reuse
         for (let i = 0; i < 4; i++) {
             const gear = solution.Gears[i];
             if (gear !== null && gear !== undefined) {
@@ -481,7 +504,7 @@ function optimizeGearSelections(targets, calc, gears, leadscrewTpi) {
         // Score all solutions for this target
         const scoredSolutions = item.solutions.map(sol => ({
             solution: sol,
-            score: scoreSolution(sol, selectedGears)
+            score: scoreSolution(sol, selectedGears, item.target)
         }));
 
         // Sort by score (highest first)

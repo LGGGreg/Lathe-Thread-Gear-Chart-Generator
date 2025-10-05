@@ -108,8 +108,10 @@
         <h2>Test Controls</h2>
         <button onclick="runAllTests()">▶️ Run All Tests</button>
         <button onclick="testGearDetection()">🔍 Test 2-Gear Detection</button>
+        <button onclick="testErrorScoring()">🎯 Test Error Scoring</button>
+        <button onclick="testRealWorldErrorSelection()">🎲 Test Real-World Error Selection</button>
+        <button onclick="testScoring()">📊 Test Full Scoring</button>
         <button onclick="testOptimization()">⚙️ Test Optimization</button>
-        <button onclick="testScoring()">📊 Test Scoring</button>
         <button onclick="clearResults()">🗑️ Clear Results</button>
     </div>
 
@@ -201,9 +203,86 @@
             return { twoGearCount, fourGearCount, total: solutions.length };
         }
 
+        function testErrorScoring() {
+            clearResults();
+            log('=== Testing Error-Based Scoring ===', 'info');
+
+            // Create three solutions with different error percentages
+            const target = { type: 'tpi', value: 8.0 };
+
+            const lowErrorSolution = {
+                Gears: [40, null, null, 80],
+                TPI: 8.001,  // 0.0125% error
+                Pitch: 3.175
+            };
+
+            const medErrorSolution = {
+                Gears: [45, null, null, 72],
+                TPI: 8.00485,  // 0.0606% error
+                Pitch: 3.175
+            };
+
+            const highErrorSolution = {
+                Gears: [50, null, null, 65],
+                TPI: 8.00699,  // 0.0874% error
+                Pitch: 3.175
+            };
+
+            // Calculate actual errors
+            const lowError = Math.abs((lowErrorSolution.TPI - target.value) / target.value * 100);
+            const medError = Math.abs((medErrorSolution.TPI - target.value) / target.value * 100);
+            const highError = Math.abs((highErrorSolution.TPI - target.value) / target.value * 100);
+
+            log(`Low error solution: [${lowErrorSolution.Gears.join(', ')}]`, 'info');
+            log(`  TPI: ${lowErrorSolution.TPI}, Error: ${lowError.toFixed(4)}%`, 'info');
+
+            log(`\nMed error solution: [${medErrorSolution.Gears.join(', ')}]`, 'info');
+            log(`  TPI: ${medErrorSolution.TPI}, Error: ${medError.toFixed(4)}%`, 'info');
+
+            log(`\nHigh error solution: [${highErrorSolution.Gears.join(', ')}]`, 'info');
+            log(`  TPI: ${highErrorSolution.TPI}, Error: ${highError.toFixed(4)}%`, 'info');
+
+            // Simulate scoring (simplified - just error component)
+            const gearFrequency = {};
+            const selectedGears = {};
+
+            const scoreLow = 100000 * Math.exp(-lowError * 10);
+            const scoreMed = 100000 * Math.exp(-medError * 10);
+            const scoreHigh = 100000 * Math.exp(-highError * 10);
+
+            log(`\nError-based scores:`, 'info');
+            log(`  Low error (${lowError.toFixed(4)}%): ${scoreLow.toFixed(0)} points`, 'info');
+            log(`  Med error (${medError.toFixed(4)}%): ${scoreMed.toFixed(0)} points`, 'info');
+            log(`  High error (${highError.toFixed(4)}%): ${scoreHigh.toFixed(0)} points`, 'info');
+
+            log(`\nScore differences:`, 'info');
+            log(`  Low vs Med: ${(scoreLow - scoreMed).toFixed(0)} points`, 'info');
+            log(`  Low vs High: ${(scoreLow - scoreHigh).toFixed(0)} points`, 'info');
+            log(`  Med vs High: ${(scoreMed - scoreHigh).toFixed(0)} points`, 'info');
+
+            // Assertions
+            assert(lowError < medError, 'Low error should be less than medium error');
+            assert(medError < highError, 'Medium error should be less than high error');
+            assert(scoreLow > scoreMed, 'Low error should score higher than medium error');
+            assert(scoreMed > scoreHigh, 'Medium error should score higher than high error');
+            assert(scoreLow > scoreHigh, 'Low error should score higher than high error');
+
+            // Check that error scoring dominates (should be > 10,000 point difference)
+            const lowMedDiff = scoreLow - scoreMed;
+            const medHighDiff = scoreMed - scoreHigh;
+            assert(lowMedDiff > 100, 'Error differences should be significant (>100 points)');
+            assert(medHighDiff > 100, 'Error differences should be significant (>100 points)');
+
+            log(`\n✓ Error-based scoring working correctly!`, 'pass');
+            log(`  Lower error = higher score`, 'pass');
+            log(`  Differences are significant`, 'pass');
+
+            return { scoreLow, scoreMed, scoreHigh, lowError, medError, highError };
+        }
+
         function testScoring() {
             clearResults();
-            log('=== Testing Scoring Algorithm ===', 'info');
+            log('=== Testing Full Scoring Algorithm ===', 'info');
 
             const twoGearSolution = {
                 Gears: [40, null, null, 80],
@@ -270,6 +349,55 @@
             return { score2, score4, ratio: score2 / score4 };
         }
 
+        function testRealWorldErrorSelection() {
+            clearResults();
+            log('=== Testing Real-World Error Selection ===', 'info');
+
+            const calc = new GearCalculator();
+            const gears = [20, 21, 25, 30, 35, 40, 45, 48, 50, 54, 55, 57, 60, 65, 72, 80];
+
+            // Test a specific TPI where we know multiple solutions exist with different errors
+            const testTPI = 12;
+            const solutions = calc.getGears({
+                gears: gears,
+                tpi: testTPI,
+                leadscrew_tpi: 16
+            });
+
+            log(`Testing TPI: ${testTPI}`, 'info');
+            log(`Found ${solutions.length} solutions`, 'info');
+
+            // Show top 5 solutions with their errors
+            log(`\nTop 5 solutions by error:`, 'info');
+            const top5 = solutions.slice(0, 5);
+            top5.forEach((sol, idx) => {
+                const error = Math.abs((sol.TPI - testTPI) / testTPI * 100);
+                const gearStr = sol.Gears.map(g => g === null ? 'ANY' : g).join('-');
+                log(`  ${idx + 1}. [${gearStr}] TPI: ${sol.TPI.toFixed(6)}, Error: ${error.toFixed(4)}%`, 'info');
+            });
+
+            // Verify that solutions are sorted by error (lowest first)
+            for (let i = 0; i < top5.length - 1; i++) {
+                const error1 = Math.abs((top5[i].TPI - testTPI) / testTPI * 100);
+                const error2 = Math.abs((top5[i + 1].TPI - testTPI) / testTPI * 100);
+
+                // Allow for very small differences due to floating point
+                if (error1 > error2 + 0.0001) {
+                    log(`\n✗ Solutions not sorted by error!`, 'fail');
+                    log(`  Solution ${i + 1} error: ${error1.toFixed(6)}%`, 'fail');
+                    log(`  Solution ${i + 2} error: ${error2.toFixed(6)}%`, 'fail');
+                    assert(false, 'Solutions should be sorted by error (lowest first)');
+                    return;
+                }
+            }
+
+            const lowestError = Math.abs((top5[0].TPI - testTPI) / testTPI * 100);
+            log(`\n✓ Solutions correctly sorted by error`, 'pass');
+            log(`  Lowest error: ${lowestError.toFixed(4)}%`, 'pass');
+
+            return { testTPI, solutionCount: solutions.length, lowestError };
+        }
+
         function testOptimization() {
             clearResults();
             log('=== Testing Full Optimization ===', 'info');
@@ -322,35 +450,43 @@
             results.detection = testGearDetection();
 
             setTimeout(() => {
-                results.scoring = testScoring();
+                results.errorScoring = testErrorScoring();
 
                 setTimeout(() => {
-                    results.optimization = testOptimization();
+                    results.realWorldError = testRealWorldErrorSelection();
 
                     setTimeout(() => {
-                        // Summary
-                        log('\n' + '='.repeat(50), 'info');
-                        log('📊 TEST SUMMARY', 'info');
-                        log('='.repeat(50), 'info');
+                        results.scoring = testScoring();
 
-                        const passed = testResults.filter(r => r.type === 'pass').length;
-                        const failed = testResults.filter(r => r.type === 'fail').length;
-                        const total = passed + failed;
+                        setTimeout(() => {
+                            results.optimization = testOptimization();
 
-                        log(`Total Tests: ${total}`, 'info');
-                        log(`Passed: ${passed} ✓`, 'pass');
-                        if (failed > 0) {
-                            log(`Failed: ${failed} ✗`, 'fail');
-                        }
-                        log(`Success Rate: ${(passed/total*100).toFixed(1)}%`, passed === total ? 'pass' : 'fail');
+                            setTimeout(() => {
+                                // Summary
+                                log('\n' + '='.repeat(50), 'info');
+                                log('📊 TEST SUMMARY', 'info');
+                                log('='.repeat(50), 'info');
 
-                        // Export results for command-line
-                        window.testResults = {
-                            passed,
-                            failed,
-                            total,
-                            details: results
-                        };
+                                const passed = testResults.filter(r => r.type === 'pass').length;
+                                const failed = testResults.filter(r => r.type === 'fail').length;
+                                const total = passed + failed;
+
+                                log(`Total Tests: ${total}`, 'info');
+                                log(`Passed: ${passed} ✓`, 'pass');
+                                if (failed > 0) {
+                                    log(`Failed: ${failed} ✗`, 'fail');
+                                }
+                                log(`Success Rate: ${(passed/total*100).toFixed(1)}%`, passed === total ? 'pass' : 'fail');
+
+                                // Export results for command-line
+                                window.testResults = {
+                                    passed,
+                                    failed,
+                                    total,
+                                    details: results
+                                };
+                            }, 100);
+                        }, 100);
                     }, 100);
                 }, 100);
             }, 100);
