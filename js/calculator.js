@@ -755,19 +755,23 @@ function exportChartToCSV() {
 function initializeGearHoverEffects() {
     const svgObject = document.getElementById('gears-svg');
 
-    if (!svgObject) return;
+    if (!svgObject) {
+        return;
+    }
 
     // Wait for SVG to load
     svgObject.addEventListener('load', function() {
         const svgDoc = svgObject.contentDocument;
-        if (!svgDoc) return;
+        if (!svgDoc) {
+            return;
+        }
 
-        // Get gear paths from SVG (labels are " GearA", "GearB", "GearC", "GearD")
+        // Get gear paths from SVG by ID
         const gearPaths = {
-            'A': svgDoc.querySelector('[inkscape\\:label=" GearA"]') || svgDoc.querySelector('[inkscape\\:label="GearA"]'),
-            'B': svgDoc.querySelector('[inkscape\\:label="GearB"]'),
-            'C': svgDoc.querySelector('[inkscape\\:label="GearC"]'),
-            'D': svgDoc.querySelector('[inkscape\\:label="GearD"]')
+            'A': svgDoc.getElementById('GearA'),
+            'B': svgDoc.getElementById('GearB'),
+            'C': svgDoc.getElementById('GearC'),
+            'D': svgDoc.getElementById('GearD')
         };
 
         // Setup hover handlers for SVG paths
@@ -776,11 +780,15 @@ function initializeGearHoverEffects() {
             if (!path) return;
 
             path.style.cursor = 'pointer';
-            path.style.transition = 'all 0.2s ease';
+            path.style.transition = 'opacity 0.2s ease';
 
             // Hover on SVG path -> highlight table column
-            path.addEventListener('mouseenter', () => highlightGear(gearLetter, true));
-            path.addEventListener('mouseleave', () => highlightGear(gearLetter, false));
+            path.addEventListener('mouseenter', () => {
+                highlightGear(gearLetter, true);
+            });
+            path.addEventListener('mouseleave', () => {
+                highlightGear(gearLetter, false);
+            });
         });
 
         // Setup hover handlers for table cells
@@ -832,23 +840,15 @@ function highlightGear(gearLetter, highlight) {
     const svgObject = document.getElementById('gears-svg');
     if (svgObject && svgObject.contentDocument) {
         const svgDoc = svgObject.contentDocument;
-        const path = svgDoc.querySelector(`[inkscape\\:label=" Gear${gearLetter}"]`) ||
-                     svgDoc.querySelector(`[inkscape\\:label="Gear${gearLetter}"]`);
+        const path = svgDoc.getElementById(`Gear${gearLetter}`);
 
         if (path) {
             if (highlight) {
-                path.classList.add('gear-path-highlighted');
-                // Store original opacity
-                if (!path.dataset.originalOpacity) {
-                    path.dataset.originalOpacity = path.style.opacity || '0.55';
-                }
+                // Change opacity from 0.55 to 1 to make it bold/visible
                 path.style.opacity = '1';
             } else {
-                path.classList.remove('gear-path-highlighted');
                 // Restore original opacity
-                if (path.dataset.originalOpacity) {
-                    path.style.opacity = path.dataset.originalOpacity;
-                }
+                path.style.opacity = '0.55';
             }
         }
     }
