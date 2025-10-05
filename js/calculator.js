@@ -888,17 +888,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Re-initialize after table updates (for dynamically generated tables)
     const observer = new MutationObserver(() => {
-        const svgObject = document.getElementById('gears-svg');
-        if (svgObject && svgObject.contentDocument) {
-            const gearPaths = {
-                'A': svgObject.contentDocument.querySelector('[inkscape\\:label=" GearA"]') ||
-                     svgObject.contentDocument.querySelector('[inkscape\\:label="GearA"]'),
-                'B': svgObject.contentDocument.querySelector('[inkscape\\:label="GearB"]'),
-                'C': svgObject.contentDocument.querySelector('[inkscape\\:label="GearC"]'),
-                'D': svgObject.contentDocument.querySelector('[inkscape\\:label="GearD"]')
-            };
-            setupTableHoverHandlers(gearPaths);
-        }
+        console.log('[OBSERVER] Table mutation detected, re-attaching hover handlers...');
+
+        // Since SVG is inline, we can access gear paths directly
+        const gearPaths = {
+            'A': document.getElementById('GearA'),
+            'B': document.getElementById('GearB'),
+            'C': document.getElementById('GearC'),
+            'D': document.getElementById('GearD')
+        };
+
+        setupTableHoverHandlers(gearPaths);
     });
 
     // Observe changes to result containers
@@ -906,9 +906,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const chartResultsDiv = document.getElementById('chart-results');
 
     if (resultsDiv) {
+        console.log('[OBSERVER] Observing results div for changes');
         observer.observe(resultsDiv, { childList: true, subtree: true });
     }
     if (chartResultsDiv) {
+        console.log('[OBSERVER] Observing chart-results div for changes');
         observer.observe(chartResultsDiv, { childList: true, subtree: true });
     }
 });
