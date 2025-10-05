@@ -1,79 +1,79 @@
 <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background circle with gradient -->
-  <defs>
-    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#2c3e50;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#34495e;stop-opacity:1" />
-    </linearGradient>
-    <linearGradient id="gearGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#3498db;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#2980b9;stop-opacity:1" />
-    </linearGradient>
-    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#e74c3c;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#c0392b;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  
-  <!-- Background -->
-  <circle cx="40" cy="40" r="38" fill="url(#bgGradient)" stroke="#1a252f" stroke-width="2"/>
-  
-  <!-- Large gear (back) -->
-  <g transform="translate(40, 40)">
-    <!-- Gear body -->
-    <circle cx="0" cy="0" r="22" fill="url(#gearGradient)" stroke="#2c3e50" stroke-width="1.5"/>
-    
-    <!-- Gear teeth (12 teeth) -->
-    <g fill="url(#gearGradient)" stroke="#2c3e50" stroke-width="1">
-      <rect x="-2" y="-26" width="4" height="6" rx="1"/>
-      <rect x="-2" y="20" width="4" height="6" rx="1"/>
-      <rect x="-26" y="-2" width="6" height="4" rx="1"/>
-      <rect x="20" y="-2" width="6" height="4" rx="1"/>
-      
-      <rect x="-17" y="-19" width="4" height="6" rx="1" transform="rotate(45 -15 -17)"/>
-      <rect x="13" y="-19" width="4" height="6" rx="1" transform="rotate(-45 15 -17)"/>
-      <rect x="-17" y="13" width="4" height="6" rx="1" transform="rotate(-45 -15 15)"/>
-      <rect x="13" y="13" width="4" height="6" rx="1" transform="rotate(45 15 15)"/>
+    <!-- Background circle with gradient matching site theme -->
+    <defs>
+        <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1"/>
+            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1"/>
+        </linearGradient>
+        <linearGradient id="gearGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#8b9aff;stop-opacity:1"/>
+            <stop offset="100%" style="stop-color:#7b8cff;stop-opacity:1"/>
+        </linearGradient>
+        <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#ff9a56;stop-opacity:1"/>
+            <stop offset="100%" style="stop-color:#ff7b3d;stop-opacity:1"/>
+        </linearGradient>
+    </defs>
+
+    <!-- Background -->
+    <circle cx="40" cy="40" r="38" fill="url(#bgGradient)" stroke="#5566d9" stroke-width="2"/>
+
+    <!-- Large gear (back) -->
+    <g transform="translate(40, 40)">
+        <!-- Gear body -->
+        <circle cx="0" cy="0" r="22" fill="url(#gearGradient)" stroke="#5566d9" stroke-width="1.5"/>
+
+        <!-- Gear teeth (12 teeth) -->
+        <g fill="url(#gearGradient)" stroke="#5566d9" stroke-width="1">
+            <rect x="-2" y="-26" width="4" height="6" rx="1"/>
+            <rect x="-2" y="20" width="4" height="6" rx="1"/>
+            <rect x="-26" y="-2" width="6" height="4" rx="1"/>
+            <rect x="20" y="-2" width="6" height="4" rx="1"/>
+
+            <rect x="-17" y="-19" width="4" height="6" rx="1" transform="rotate(45 -15 -17)"/>
+            <rect x="13" y="-19" width="4" height="6" rx="1" transform="rotate(-45 15 -17)"/>
+            <rect x="-17" y="13" width="4" height="6" rx="1" transform="rotate(-45 -15 15)"/>
+            <rect x="13" y="13" width="4" height="6" rx="1" transform="rotate(45 15 15)"/>
+        </g>
+
+        <!-- Center hole -->
+        <circle cx="0" cy="0" r="8" fill="#5566d9" stroke="#4455c8" stroke-width="1.5"/>
+        <circle cx="0" cy="0" r="5" fill="none" stroke="#667eea" stroke-width="1"/>
     </g>
-    
-    <!-- Center hole -->
-    <circle cx="0" cy="0" r="8" fill="#2c3e50" stroke="#1a252f" stroke-width="1.5"/>
-    <circle cx="0" cy="0" r="5" fill="none" stroke="#34495e" stroke-width="1"/>
-  </g>
-  
-  <!-- Small gear (front right) -->
-  <g transform="translate(56, 32)">
-    <!-- Gear body -->
-    <circle cx="0" cy="0" r="12" fill="url(#accentGradient)" stroke="#2c3e50" stroke-width="1.5"/>
-    
-    <!-- Gear teeth (8 teeth) -->
-    <g fill="url(#accentGradient)" stroke="#2c3e50" stroke-width="0.8">
-      <rect x="-1.5" y="-14" width="3" height="3" rx="0.5"/>
-      <rect x="-1.5" y="11" width="3" height="3" rx="0.5"/>
-      <rect x="-14" y="-1.5" width="3" height="3" rx="0.5"/>
-      <rect x="11" y="-1.5" width="3" height="3" rx="0.5"/>
-      
-      <rect x="-10" y="-10" width="3" height="3" rx="0.5" transform="rotate(45 -8.5 -8.5)"/>
-      <rect x="7" y="-10" width="3" height="3" rx="0.5" transform="rotate(-45 8.5 -8.5)"/>
-      <rect x="-10" y="7" width="3" height="3" rx="0.5" transform="rotate(-45 -8.5 8.5)"/>
-      <rect x="7" y="7" width="3" height="3" rx="0.5" transform="rotate(45 8.5 8.5)"/>
+
+    <!-- Small gear (front right) -->
+    <g transform="translate(56, 32)">
+        <!-- Gear body -->
+        <circle cx="0" cy="0" r="12" fill="url(#accentGradient)" stroke="#5566d9" stroke-width="1.5"/>
+
+        <!-- Gear teeth (8 teeth) -->
+        <g fill="url(#accentGradient)" stroke="#5566d9" stroke-width="0.8">
+            <rect x="-1.5" y="-14" width="3" height="3" rx="0.5"/>
+            <rect x="-1.5" y="11" width="3" height="3" rx="0.5"/>
+            <rect x="-14" y="-1.5" width="3" height="3" rx="0.5"/>
+            <rect x="11" y="-1.5" width="3" height="3" rx="0.5"/>
+
+            <rect x="-10" y="-10" width="3" height="3" rx="0.5" transform="rotate(45 -8.5 -8.5)"/>
+            <rect x="7" y="-10" width="3" height="3" rx="0.5" transform="rotate(-45 8.5 -8.5)"/>
+            <rect x="-10" y="7" width="3" height="3" rx="0.5" transform="rotate(-45 -8.5 8.5)"/>
+            <rect x="7" y="7" width="3" height="3" rx="0.5" transform="rotate(45 8.5 8.5)"/>
+        </g>
+
+        <!-- Center hole -->
+        <circle cx="0" cy="0" r="4" fill="#5566d9" stroke="#4455c8" stroke-width="1"/>
     </g>
-    
-    <!-- Center hole -->
-    <circle cx="0" cy="0" r="4" fill="#2c3e50" stroke="#1a252f" stroke-width="1"/>
-  </g>
-  
-  <!-- Calculator/measurement symbol -->
-  <g transform="translate(24, 56)">
-    <!-- Ruler/measurement marks -->
-    <rect x="0" y="0" width="20" height="4" rx="1" fill="#ecf0f1" stroke="#2c3e50" stroke-width="1"/>
-    <line x1="5" y1="0" x2="5" y2="4" stroke="#2c3e50" stroke-width="0.8"/>
-    <line x1="10" y1="0" x2="10" y2="4" stroke="#2c3e50" stroke-width="1.2"/>
-    <line x1="15" y1="0" x2="15" y2="4" stroke="#2c3e50" stroke-width="0.8"/>
-  </g>
-  
-  <!-- Highlight/shine effect -->
-  <circle cx="32" cy="28" r="4" fill="white" opacity="0.3"/>
-  <circle cx="35" cy="31" r="2" fill="white" opacity="0.5"/>
+
+    <!-- Calculator/measurement symbol -->
+    <g transform="translate(24, 56)">
+        <!-- Ruler/measurement marks -->
+        <rect x="0" y="0" width="20" height="4" rx="1" fill="#ffffff" stroke="#5566d9" stroke-width="1"/>
+        <line x1="5" y1="0" x2="5" y2="4" stroke="#5566d9" stroke-width="0.8"/>
+        <line x1="10" y1="0" x2="10" y2="4" stroke="#5566d9" stroke-width="1.2"/>
+        <line x1="15" y1="0" x2="15" y2="4" stroke="#5566d9" stroke-width="0.8"/>
+    </g>
+
+    <!-- Highlight/shine effect -->
+    <circle cx="32" cy="28" r="4" fill="white" opacity="0.3"/>
+    <circle cx="35" cy="31" r="2" fill="white" opacity="0.5"/>
 </svg>
 
